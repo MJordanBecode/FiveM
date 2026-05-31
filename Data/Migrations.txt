@@ -1,0 +1,29 @@
+# ==========================================
+# ADD MIGRATION
+# ==========================================
+
+dotnet ef migrations add InitialCreate --project Data --startup-project Api
+
+# ==========================================
+# UPDATE DATABASE
+# ==========================================
+
+dotnet ef database update --project Data --startup-project Api
+
+# ==========================================
+# REMOVE LAST MIGRATION
+# ==========================================
+
+dotnet ef migrations remove --project Data --startup-project Api
+
+# ==========================================
+# DROP DATABASE
+# ==========================================
+
+dotnet ef database drop --project Data --startup-project Api
+
+# ==========================================
+# LIST MIGRATIONS
+# ==========================================
+
+dotnet ef migrations list --project Data --startup-project Api

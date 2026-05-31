@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+
+namespace ClassLibrary1.Models
+{
+    public class ItemCategoriesVM : BaseModelVM
+    {
+       public required string Name { get; set; }
+       public string Label { get; set; } = string.Empty;
+    }
+}
