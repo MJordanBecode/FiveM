@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Éléments de solution/">
+    <File Path=".env" />
+    <File Path=".env.example" />
+  </Folder>
   <Project Path="Admin/Admin.csproj" Id="7b123b7b-225c-49a5-902e-b90d337186a2" />
   <Project Path="Api/Api.csproj" />
   <Project Path="ClassLibrary1/Server.csproj" Id="9c255be2-ccdb-43b8-99cb-f336e7691785" />
