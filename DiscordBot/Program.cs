@@ -1,48 +1,44 @@
-using Discord;
-using Discord.WebSocket;
-using Discord.Interactions;
-using DotNetEnv;
-using System.Reflection;
 using DiscordBot.Database;
+using DiscordBot.Interfaces;
 using DiscordBot.ModelMongoose;
+using DiscordBot.Services;
+using DotNetEnv;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using MongoDB.Bson;
-
+using System.Reflection;
 
 Env.TraversePath().Load();
 
-var discordToken = Environment.GetEnvironmentVariable("DISCORD_TOKEN");
-var mongoDbUserName = Environment.GetEnvironmentVariable("MongoDBUserName");
-var mongoDbPassword = Environment.GetEnvironmentVariable("MongoDBPassword");
+var discordToken = Environment.GetEnvironmentVariable("DISCORD_TOKEN")
+    ?? throw new InvalidOperationException("DISCORD_TOKEN introuvable");
 
-if (string.IsNullOrWhiteSpace(mongoDbUserName) || string.IsNullOrWhiteSpace(mongoDbPassword))
-{
-    throw new Exception("MongoDBUserName ou MongoDBPassword introuvable");
-}
+var mongoDbUserName = Environment.GetEnvironmentVariable("MongoDBUserName")
+    ?? throw new InvalidOperationException("MongoDBUserName introuvable");
+
+var mongoDbPassword = Environment.GetEnvironmentVariable("MongoDBPassword")
+    ?? throw new InvalidOperationException("MongoDBPassword introuvable");
+
+var guildId = ulong.Parse(
+    Environment.GetEnvironmentVariable("DISCORD_GUILD")
+    ?? throw new InvalidOperationException("DISCORD_GUILD introuvable")
+);
 
 string connectionUri = $"mongodb+srv://{mongoDbUserName}:{mongoDbPassword}@cluster0.velxzps.mongodb.net/?appName=Cluster0";
 var mongoContext = new MongoContext(connectionUri);
 
-MongoCollections.Players = mongoContext.Database
-    .GetCollection<PlayerInformations>("PlayerInformations");
+var count = await mongoContext.Players.CountDocumentsAsync(Builders<PlayerInformations>.Filter.Empty);
+Console.WriteLine($"[MongoDB] Connexion OK — {count} joueurs en base.");
 
-var count = await MongoCollections.Players.CountDocumentsAsync(_ => true);
-Console.WriteLine($"Documents trouvés : {count}");
+var services = new ServiceCollection()
+    .AddSingleton(mongoContext)
+    .AddSingleton<IPlayerInterface, PlayerService>()
+    .BuildServiceProvider();
 
-if (string.IsNullOrWhiteSpace(connectionUri))
-{
-    throw new Exception("URI de connexion MongoDB introuvable");
-}
-
-
-if (string.IsNullOrWhiteSpace(discordToken))
-{
-    throw new Exception("DISCORD_TOKEN introuvable");
-}
+var playerService = services.GetRequiredService<IPlayerInterface>();
 
 var client = new DiscordSocketClient(new DiscordSocketConfig
 {
-    GatewayIntents = GatewayIntents.Guilds
+    GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers
 });
 
 var interactions = new InteractionService(client.Rest);
@@ -63,22 +59,63 @@ client.Ready += async () =>
 {
     Console.WriteLine($"Connecté en tant que {client.CurrentUser}");
 
-    ulong guildId = 1398732675145011271;
-
-    await interactions.AddModulesAsync(Assembly.GetExecutingAssembly(), null);
+    await interactions.AddModulesAsync(Assembly.GetExecutingAssembly(), services);
     await interactions.RegisterCommandsToGuildAsync(guildId);
 
-    Console.WriteLine("Slash commands enregistrées");
+    Console.WriteLine("Slash commands enregistrées.");
+
+    client.UserJoined += async user =>
+    {
+        Console.WriteLine($"[DEBUG] Quelqu'un rejoint : {user.Username}");
+
+        PlayerInformations newPlayer = new()
+        {
+            CreatedBy = "system",
+            DiscordID = user.Id.ToString(),
+            DiscordName = user.Username,
+            DiscordPseudo = user.GlobalName ?? user.Username,
+            AvatarUrl = user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl(),
+            Xp = 0,
+            Level = 0,
+            Grade = "Novice",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false,
+            IsBanned = false
+        };
+
+        await playerService.CreatePlayerByID(newPlayer);
+    };
+
+    client.UserLeft += async (guild, user) =>
+    {
+        Console.WriteLine($"[DEBUG] Quelqu'un quitte : {user.Username} (ID: {user.Id})");
+
+        var player = await playerService.GetPlayerByDiscordIDAsync(user.Id.ToString());
+        if (player == null) return;
+
+        TimeSpan tempsPasseSurLeServeur = DateTime.UtcNow - player.CreatedAt;
+
+        if (tempsPasseSurLeServeur < TimeSpan.FromHours(2))
+        {
+            Console.WriteLine("[DEBUG] Joueur éphémère. Suppression définitive de la BDD.");
+            await playerService.HardDeletePlayerID(user.Id.ToString());
+        }
+        else
+        {
+            Console.WriteLine("[DEBUG] Joueur régulier. Archivage du profil.");
+            await playerService.SoftDeletePlayerID(user.Id.ToString());
+        }
+    };
+
+    Console.WriteLine("Écoute des événements membres activée !");
 };
 
 client.InteractionCreated += async interaction =>
 {
     var context = new SocketInteractionContext(client, interaction);
-    await interactions.ExecuteCommandAsync(context, null);
+    await interactions.ExecuteCommandAsync(context, services);
 };
-Console.WriteLine(MongoCollections.Players == null
-    ? "Players NULL"
-    : "Players OK");
 
 await client.LoginAsync(TokenType.Bot, discordToken);
 await client.StartAsync();
