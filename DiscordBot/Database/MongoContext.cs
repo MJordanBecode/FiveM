@@ -14,6 +14,10 @@ namespace DiscordBot.Database
 
         public IMongoCollection<PlayerInformations> Players =>
             Database.GetCollection<PlayerInformations>("PlayerInformations");
+        public IMongoCollection<PlayerBans> Bans =>
+            Database.GetCollection<PlayerBans>("PlayerBans");
+        public IMongoCollection<PlayerInformationsBans> PlayerInformationsBans =>
+            Database.GetCollection<PlayerInformationsBans>("PlayerInformationsBans");
 
         public MongoContext(string connectionString)
         {

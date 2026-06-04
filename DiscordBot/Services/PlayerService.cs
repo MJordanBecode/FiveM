@@ -18,11 +18,51 @@ namespace DiscordBot.Services
         {
             _db = db;
         }
-        public Task<PlayerInformations?> BanPlayerToDiscord(string DiscordID, string Reason, TimeSpan Duration, string? PseudoDiscord)
+        public async Task<BanPlayerResult?> BanPlayerToDiscordAsync(string DiscordID, string Reason, DateTime? ExpiresAt)
         {
-            throw new NotImplementedException();
-        }
+            if (string.IsNullOrEmpty(DiscordID) || string.IsNullOrEmpty(Reason) || ExpiresAt == null || ExpiresAt <= DateTime.UtcNow)
+            {
+                return null;
+            }
 
+            var checkIfPlayerExist = await _db.Players
+                .Find(p => p.DiscordID == DiscordID)
+                .FirstOrDefaultAsync();
+
+            if (checkIfPlayerExist == null)
+            {
+                return null;
+            }
+
+            var banCount = await _db.PlayerInformationsBans.CountDocumentsAsync(
+                p => p.PlayerInformationsID == checkIfPlayerExist.Id
+            );
+
+            PlayerBans PlayerBan = new()
+            {
+                BanDate = DateTime.UtcNow,
+                ExpiresAt = ExpiresAt,
+                Reason = Reason,
+                CreatedBy = "LostGenBot"
+            };
+
+            await _db.Bans.InsertOneAsync(PlayerBan);
+
+            PlayerInformationsBans PlayerInformationBan = new()
+            {
+                PlayerInformationsID = checkIfPlayerExist.Id!,
+                PlayerBanID = PlayerBan.Id!,
+                CreatedBy = "LostGenBot"
+            };
+
+            await _db.PlayerInformationsBans.InsertOneAsync(PlayerInformationBan);
+
+            return new BanPlayerResult
+            {
+                Player = checkIfPlayerExist,
+                BanCountBefore = banCount
+            };
+        }
         public async Task CreatePlayerByID(PlayerInformations player)
         {
             if (player == null)
@@ -124,7 +164,7 @@ namespace DiscordBot.Services
             return player;
         }
 
-        public Task<PlayerInformations?> KickPlayerToDiscord(string DiscordID, string Reason, TimeSpan Duration)
+        public Task<PlayerInformations?> KickPlayerToDiscord(string DiscordID, string Reason, DateTime? ExpiresAt)
         {
             throw new NotImplementedException();
         }
@@ -153,6 +193,13 @@ namespace DiscordBot.Services
         public Task<PlayerInformations?> UpdateXpPlayerByIDAsync(string DiscordID, int XpToAdd)
         {
             throw new NotImplementedException();
+        }
+
+        public class BanPlayerResult
+        {
+            public required PlayerInformations Player { get; set; }
+            public long BanCountBefore { get; set; }
+            public long BanCountAfter => BanCountBefore + 1;
         }
     }
 }
