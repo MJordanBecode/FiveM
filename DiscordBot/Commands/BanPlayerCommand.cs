@@ -11,39 +11,27 @@ namespace DiscordBot.Commands
             _playerService = playerService;
         }
 
-        [SlashCommand("ban", "Ban un joueur par son DiscordID")]
-        public async Task BanAsync(string DiscordID, string Reason, double Duration)
+        [SlashCommand("ban", "Ban un joueur par son DiscordName")]
+        public async Task BanAsync(ulong DiscordID, string Reason, double Duration)
         {
             await DeferAsync();
 
             var expiresAt = DateTime.UtcNow.AddHours(Duration);
 
-            var result = await _playerService.BanPlayerToDiscordAsync(DiscordID, Reason, expiresAt);
+            var CheckIfPlayerExist = await _playerService.GetPlayerByDiscordByIDAsync(DiscordID);
 
-            if (result == null)
-            {
-                await FollowupAsync("❌ Impossible de bannir le joueur.");
-                return;
-            }
+            if (CheckIfPlayerExist == null)
+                throw new Exception("L'utilisateur pas trouvé");
 
-            if (result.BanCountAfter == 2)
-            {
-                var user = Context.Guild.GetUser(ulong.Parse(DiscordID));
-                if (user != null)
-                    await user.KickAsync(Reason);
+            await _playerService.BanPlayerToDiscordAsync(DiscordID, Reason, expiresAt);
 
-                await FollowupAsync("⚠️ Joueur sanctionné en DB et kick du serveur.");
-            }
-            else if (result.BanCountAfter >= 3)
-            {
-                await Context.Guild.AddBanAsync(ulong.Parse(DiscordID), reason: Reason);
+            await Context.Guild.AddBanAsync(ulong.Parse(CheckIfPlayerExist.DiscordID), 0, Reason);   
 
-                await FollowupAsync("🚫 Joueur sanctionné en DB et banni du serveur.");
-            }
-            else
-            {
-                await FollowupAsync("✅ Sanction enregistrée en DB.");
-            }
+
+            await FollowupAsync($"Le joueur {CheckIfPlayerExist.DiscordName} a été banni pour la raison : {Reason} pendant {Duration} heures.");
+
+
+
         }
     }
 }

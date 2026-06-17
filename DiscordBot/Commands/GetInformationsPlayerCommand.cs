@@ -15,13 +15,14 @@ namespace DiscordBot.Commands
         }
 
         [SlashCommand("profil", "Affiche le profil complet d'un joueur")]
-        public async Task ProfilAsync(string playerInfo)
+        public async Task ProfilAsync()
         {
-            var player = await _playerService.GetPlayerByDiscordByIDOrPseudoAsync(playerInfo);
+            var DiscordID = Context.User.Id;
+            var player = await _playerService.GetPlayerByDiscordByIDAsync(DiscordID);
 
             if (player == null)
             {
-                await RespondAsync($"❌ Aucun profil trouvé pour `{playerInfo}`.", ephemeral: true);
+                await RespondAsync($"❌ Aucun profil trouvé pour `{Context.User.GlobalName}`.", ephemeral: true);
                 return;
             }
 

@@ -9,7 +9,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DiscordBot.ModelMongoose
 {
-    public class PlayerInformations : BaseModel
+    public class Players : BaseModel
     {        
         public required string DiscordName { get; set; }
         public required string DiscordPseudo { get; set; }

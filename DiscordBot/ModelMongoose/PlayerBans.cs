@@ -1,9 +1,15 @@
-﻿namespace DiscordBot.ModelMongoose
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace DiscordBot.ModelMongoose
 {
     public class PlayerBans : BaseModel
     {
-        public required string Reason { get; set; }
-        public required DateTime BanDate { get; set; } = DateTime.UtcNow;
-        public DateTime? ExpiresAt { get; set; } // null = permanent
+        public required string PlayerID { get; set; }
+        public required string PlayerBanID { get; set; }
+
+        [BsonIgnore]
+        public Players? Players { get; set; }
+        [BsonIgnore]
+        public Bans? PlayerBan { get; set; }
     }
 }

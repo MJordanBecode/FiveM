@@ -12,12 +12,22 @@ namespace DiscordBot.Database
     {
         public IMongoDatabase Database { get; }
 
-        public IMongoCollection<PlayerInformations> Players =>
-            Database.GetCollection<PlayerInformations>("PlayerInformations");
-        public IMongoCollection<PlayerBans> Bans =>
+        public IMongoCollection<Players> Players =>
+            Database.GetCollection<Players>("Players");
+        public IMongoCollection<Bans> Bans =>
+            Database.GetCollection<Bans>("Bans");
+
+        public IMongoCollection<PlayerBans> PlayerBans => 
             Database.GetCollection<PlayerBans>("PlayerBans");
-        public IMongoCollection<PlayerInformationsBans> PlayerInformationsBans =>
-            Database.GetCollection<PlayerInformationsBans>("PlayerInformationsBans");
+
+        public IMongoCollection<Punishments> Punishments => 
+            Database.GetCollection<Punishments>("Punishments");
+
+        public IMongoCollection<PlayerPunishments> PlayerPunishments => 
+            Database.GetCollection<PlayerPunishments>("PlayerPunishments");
+
+        public IMongoCollection<PlayerBans> PlayerInformationsBans =>
+            Database.GetCollection<PlayerBans>("PlayerInformationsBans");
 
         public MongoContext(string connectionString)
         {

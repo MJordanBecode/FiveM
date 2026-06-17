@@ -26,7 +26,7 @@ var guildId = ulong.Parse(
 string connectionUri = $"mongodb+srv://{mongoDbUserName}:{mongoDbPassword}@cluster0.velxzps.mongodb.net/?appName=Cluster0";
 var mongoContext = new MongoContext(connectionUri);
 
-var count = await mongoContext.Players.CountDocumentsAsync(Builders<PlayerInformations>.Filter.Empty);
+var count = await mongoContext.Players.CountDocumentsAsync(Builders<Players>.Filter.Empty);
 Console.WriteLine($"[MongoDB] Connexion OK — {count} joueurs en base.");
 
 var services = new ServiceCollection()
@@ -68,30 +68,48 @@ client.Ready += async () =>
     {
         Console.WriteLine($"[DEBUG] Quelqu'un rejoint : {user.Username}");
 
-        PlayerInformations newPlayer = new()
-        {
-            CreatedBy = "system",
-            DiscordID = user.Id.ToString(),
-            DiscordName = user.Username,
-            DiscordPseudo = user.GlobalName ?? user.Username,
-            AvatarUrl = user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl(),
-            Xp = 0,
-            Level = 0,
-            Grade = "Novice",
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-            IsDeleted = false,
-            IsBanned = false
-        };
+        var isBanned = await playerService.CheckIfPlayerIsBanned(user.Id);
 
-        await playerService.CreatePlayerByID(newPlayer);
+        if (isBanned)
+        {
+           
+            await user.Guild.AddBanAsync(
+                user,
+                pruneDays:0,
+                reason: "3eme Warn"
+            );
+
+            return;
+            }
+
+        var player = await playerService.GetPlayerByDiscordByIDAsync(user.Id);
+
+        if (player is null)
+        {
+            Players newPlayer = new()
+            {
+                CreatedBy = "system",
+                DiscordID = user.Id.ToString(),
+                DiscordName = user.Username,
+                DiscordPseudo = user.GlobalName ?? user.Username,
+                AvatarUrl = user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl(),
+                Xp = 0,
+                Level = 0,
+                Grade = "Novice",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsDeleted = false
+            };
+
+            await playerService.CreatePlayerByID(newPlayer);
+        }
     };
 
     client.UserLeft += async (guild, user) =>
     {
         Console.WriteLine($"[DEBUG] Quelqu'un quitte : {user.Username} (ID: {user.Id})");
 
-        var player = await playerService.GetPlayerByDiscordIDAsync(user.Id.ToString());
+        var player = await playerService.GetPlayerByDiscordByIDAsync(user.Id);
         if (player == null) return;
 
         TimeSpan tempsPasseSurLeServeur = DateTime.UtcNow - player.CreatedAt;
@@ -99,12 +117,12 @@ client.Ready += async () =>
         if (tempsPasseSurLeServeur < TimeSpan.FromHours(2))
         {
             Console.WriteLine("[DEBUG] Joueur éphémère. Suppression définitive de la BDD.");
-            await playerService.HardDeletePlayerID(user.Id.ToString());
+            await playerService.HardDeletePlayerID(user.Id);
         }
         else
         {
             Console.WriteLine("[DEBUG] Joueur régulier. Archivage du profil.");
-            await playerService.SoftDeletePlayerID(user.Id.ToString());
+            await playerService.SoftDeletePlayerID(user.Id);
         }
     };
 

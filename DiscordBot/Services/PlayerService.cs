@@ -2,6 +2,8 @@
 using DiscordBot.ModelMongoose;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using DiscordBot.Enums;
+using Discord;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,52 +20,92 @@ namespace DiscordBot.Services
         {
             _db = db;
         }
-        public async Task<BanPlayerResult?> BanPlayerToDiscordAsync(string DiscordID, string Reason, DateTime? ExpiresAt)
+
+        public async Task<Players?> BanPlayerToDiscordAsync(ulong discordId, string reason, DateTime? expiresAt)
         {
-            if (string.IsNullOrEmpty(DiscordID) || string.IsNullOrEmpty(Reason) || ExpiresAt == null || ExpiresAt <= DateTime.UtcNow)
+            if (string.IsNullOrWhiteSpace(reason) ||
+                expiresAt == null ||
+                expiresAt <= DateTime.UtcNow)
             {
                 return null;
             }
 
-            var checkIfPlayerExist = await _db.Players
-                .Find(p => p.DiscordID == DiscordID)
-                .FirstOrDefaultAsync();
+            var player = await GetPlayerByDiscordByIDAsync(discordId);
 
-            if (checkIfPlayerExist == null)
-            {
+            if (player == null)
                 return null;
-            }
 
-            var banCount = await _db.PlayerInformationsBans.CountDocumentsAsync(
-                p => p.PlayerInformationsID == checkIfPlayerExist.Id
-            );
-
-            PlayerBans PlayerBan = new()
+            Bans ban = new()
             {
+                Reason = reason,
                 BanDate = DateTime.UtcNow,
-                ExpiresAt = ExpiresAt,
-                Reason = Reason,
-                CreatedBy = "LostGenBot"
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "LostGen",
             };
 
-            await _db.Bans.InsertOneAsync(PlayerBan);
+            await _db.Bans.InsertOneAsync(ban);
 
-            PlayerInformationsBans PlayerInformationBan = new()
+            PlayerBans playerBans = new()
             {
-                PlayerInformationsID = checkIfPlayerExist.Id!,
-                PlayerBanID = PlayerBan.Id!,
-                CreatedBy = "LostGenBot"
+                PlayerID = player.Id,
+                PlayerBanID = ban.Id,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "LostGen",
             };
 
-            await _db.PlayerInformationsBans.InsertOneAsync(PlayerInformationBan);
+            await _db.PlayerBans.InsertOneAsync(playerBans);
 
-            return new BanPlayerResult
-            {
-                Player = checkIfPlayerExist,
-                BanCountBefore = banCount
-            };
+            return player;
         }
-        public async Task CreatePlayerByID(PlayerInformations player)
+
+        public async Task<bool> CheckIfPlayerIsBanned(ulong discordId)
+        {
+            var player = await GetPlayerByDiscordByIDAsync(discordId);
+
+            if (player == null)
+                return false;
+
+            return await _db.PlayerBans
+                .Find(b => b.PlayerID == player.Id)
+                .AnyAsync();
+        }
+        public async Task<Punishments?> WarnPlayerByDiscordIDAsync(ulong discordId, string reason, PunishmentTypes punishmentTypes)
+        {
+            var player = await GetPlayerByDiscordByIDAsync(discordId);
+
+            if (player == null)
+                return null;
+
+            Punishments warn = new()
+            {
+                Reason = reason,
+                Type = punishmentTypes.ToString(),
+                Duration = null,
+                PlayerID = player.Id,
+                CreatedBy = "LostGen",
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            await _db.Punishments.InsertOneAsync(warn);
+
+            return warn;
+        }
+
+        public async Task<int> PunishmentPlayerCount(ulong discordId, PunishmentTypes punishmentType)
+        {
+            var player = await GetPlayerByDiscordByIDAsync(discordId);
+
+            if (player == null)
+                return 0;
+
+            return (int)await _db.Punishments.CountDocumentsAsync(
+                p => p.PlayerID == player.Id &&
+                     p.Type == punishmentType.ToString()
+            );
+        }
+
+
+        public async Task CreatePlayerByID(Players player)
         {
             if (player == null)
                 throw new ArgumentNullException(nameof(player));
@@ -75,8 +117,8 @@ namespace DiscordBot.Services
             {
              
                 var UpdateStatuDelete = await _db.Players.UpdateOneAsync(
-                    Builders<PlayerInformations>.Filter.Eq(p => p.DiscordID, player.DiscordID),
-                    Builders<PlayerInformations>.Update.Set(p => p.IsDeleted, false)
+                    Builders<Players>.Filter.Eq(p => p.DiscordID, player.DiscordID),
+                    Builders<Players>.Update.Set(p => p.IsDeleted, false)
                 );  
 
                 return;
@@ -104,102 +146,66 @@ namespace DiscordBot.Services
             Console.WriteLine($"[MongoDB] Joueur {player.DiscordPseudo} ajouté avec succès !");
         }
 
-        public Task<List<PlayerInformations>> GetAllPlayersAsync()
+        public Task<List<Players>> GetAllPlayersAsync()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<PlayerInformations?> GetPlayerByDiscordIDOrPseudoAsync(string playerInfo)
+
+        public async Task<Players?> GetPlayerByDiscordByIDAsync(ulong discordId)
         {
-            if (string.IsNullOrWhiteSpace(playerInfo))
-                return null;
+            var discordIdString = discordId.ToString();
 
-            var filter = Builders<PlayerInformations>.Filter.Or(
-                Builders<PlayerInformations>.Filter.Eq(p => p.DiscordID, playerInfo),
-                Builders<PlayerInformations>.Filter.Regex(p => p.DiscordPseudo, new BsonRegularExpression(playerInfo, "i")),
-                Builders<PlayerInformations>.Filter.Regex(p => p.DiscordName, new BsonRegularExpression(playerInfo, "i"))
-            );
-
-            var player = await _db.Players.Find(filter).FirstOrDefaultAsync();
-
-            if (player == null)
-                Console.WriteLine($"[MongoDB] Aucun joueur trouvé pour : {playerInfo}");
-
-            return player;
-        }
-
-
-        public async Task<PlayerInformations?> GetPlayerByDiscordByIDOrPseudoAsync(string playerInfo)
-        {
-            if (string.IsNullOrWhiteSpace(playerInfo))
-                return null;
-
-            var filter = Builders<PlayerInformations>.Filter.Or(
-                Builders<PlayerInformations>.Filter.Eq(p => p.DiscordID, playerInfo),
-                Builders<PlayerInformations>.Filter.Regex(p => p.DiscordPseudo, new BsonRegularExpression(playerInfo, "i")),
-                Builders<PlayerInformations>.Filter.Regex(p => p.DiscordName, new BsonRegularExpression(playerInfo, "i"))
-            );
-
-            var player = await _db.Players.Find(filter).FirstOrDefaultAsync();
-
-            if (player == null)
-                Console.WriteLine($"[MongoDB] Aucun joueur trouvé pour : {playerInfo}");
-            else
-                Console.WriteLine($"[MongoDB] Joueur trouvé pour : {playerInfo}");
-
-            return player;
-        }
-
-        public async Task<PlayerInformations?> GetPlayerByDiscordIDAsync(string discordId)
-        {
             var player = await _db.Players
-                .Find(p => p.DiscordID == discordId)
+                .Find(p => p.DiscordID == discordIdString)
                 .FirstOrDefaultAsync();
 
-            if (player == null)
-                Console.WriteLine($"[MongoDB] Aucun joueur trouvé avec DiscordID : {discordId}");
+            if (player != null)
+                Console.WriteLine($"[MongoDB] Joueur trouvé avec DiscordID : {discordIdString}");
             else
-                Console.WriteLine($"[MongoDB] Joueur trouvé avec DiscordID : {discordId}");
+                Console.WriteLine($"[MongoDB] Aucun joueur trouvé avec DiscordID : {discordIdString}");
 
             return player;
         }
 
-        public Task<PlayerInformations?> KickPlayerToDiscord(string DiscordID, string Reason, DateTime? ExpiresAt)
+
+        public Task<Players?> KickPlayerToDiscord(ulong discordId, string reason, DateTime? expiresAt)
         {
             throw new NotImplementedException();
         }
 
-        public async Task SoftDeletePlayerID(string DiscordID)
+        public Task<Players?> MutePlayerToDiscord(ulong discordId, string reason, DateTime? expiresAt)
         {
-            var softDelete = await _db.Players.UpdateOneAsync(
-                Builders<PlayerInformations>.Filter.Eq(p => p.DiscordID, DiscordID),
-                Builders<PlayerInformations>.Update.Set(p => p.IsDeleted, true)
+            throw new NotImplementedException();
+        }
+
+        public async Task SoftDeletePlayerID(ulong discordId)
+        {
+            await _db.Players.UpdateOneAsync(
+                Builders<Players>.Filter.Eq(p => p.DiscordID, discordId.ToString()),
+                Builders<Players>.Update.Set(p => p.IsDeleted, true)
             );
         }
 
-        public Task HardDeletePlayerID(string DiscordID)
+        public Task HardDeletePlayerID(ulong discordId)
         {
-            var hardDelete = _db.Players.DeleteOneAsync(
-                Builders<PlayerInformations>.Filter.Eq(p => p.DiscordID, DiscordID)
+            return _db.Players.DeleteOneAsync(
+                Builders<Players>.Filter.Eq(p => p.DiscordID, discordId.ToString())
             );
-            return hardDelete;
         }
 
-        public Task<PlayerInformations?> UpdateLevelPlayerByIDAsync(string DiscordID, ushort NewLevel)
+        public Task<Players?> UpdateLevelPlayerByIDAsync(ulong discordId, ushort newLevel)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlayerInformations?> UpdateXpPlayerByIDAsync(string DiscordID, int XpToAdd)
+        public Task<Players?> UpdateXpPlayerByIDAsync(ulong discordId, int xpToAdd)
         {
             throw new NotImplementedException();
         }
 
-        public class BanPlayerResult
-        {
-            public required PlayerInformations Player { get; set; }
-            public long BanCountBefore { get; set; }
-            public long BanCountAfter => BanCountBefore + 1;
-        }
+
+
+
     }
 }
