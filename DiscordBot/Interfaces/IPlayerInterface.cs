@@ -21,6 +21,8 @@ namespace DiscordBot.Interfaces
         Task<Players?> BanPlayerToDiscordAsync(ulong discordId, string reason, DateTime? expiresAt);
         Task<Players?> MutePlayerToDiscord(ulong discordId, string reason, DateTime? expiresAt);
 
+        Task<Players?> WhiteListPlayer(ulong DiscordId);
+
         Task<bool> CheckIfPlayerIsBanned(ulong discordId);
 
         Task<Punishments?> WarnPlayerByDiscordIDAsync(ulong discordId, string reason,PunishmentTypes punishmentTypes);

@@ -204,6 +204,13 @@ namespace DiscordBot.Services
             throw new NotImplementedException();
         }
 
+        public Task<Players?> WhiteListPlayer (ulong DiscordId)
+        {
+
+            //Intégrer l'id discord dans la DB FiveM + ajouter le role "Players" [Check comment faire]
+            return null;
+        }
+
 
 
 

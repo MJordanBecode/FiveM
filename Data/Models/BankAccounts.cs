@@ -10,7 +10,7 @@ namespace ClassLibrary1.Models
         public bool IsActived { get; set; } = true;
         public long Balance { get; set; }
 
-        public required int PlayerID { get; set; }
+        public required Guid PlayerID { get; set; }
 
         public required Players Player { get; set; }
 

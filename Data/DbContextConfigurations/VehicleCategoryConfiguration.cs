@@ -1,0 +1,22 @@
+﻿using ClassLibrary1.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Data.Configurations;
+
+public class VehicleCategoryConfiguration : IEntityTypeConfiguration<Vehiclecategories>
+{
+    public void Configure(EntityTypeBuilder<Vehiclecategories> builder)
+    {
+        builder.ToTable("VehicleCategories");
+
+        builder.HasKey(x => x.ID);
+
+        builder.Property(x => x.Name)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
+    }
+}

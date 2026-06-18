@@ -14,7 +14,10 @@ namespace ClassLibrary1.Models
 
         public Guid PlayerID { get; set; }
         public Guid InventoryID { get; set; }
+        public Guid ItemID { get; set; }
+
         public required Players Player { get; set; }
         public required Inventories Inventory { get; set; }
+        public required Items Item { get; set; }
     }
 }

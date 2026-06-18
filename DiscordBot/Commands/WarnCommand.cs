@@ -19,7 +19,18 @@ namespace DiscordBot.Commands
         {
             await DeferAsync(ephemeral: true);
 
+            ulong targetChannelId = 1510288766420521031;
+            var channel = Context.Client.GetChannel(targetChannelId) as IMessageChannel;
+
+            if (channel == null)
+            {
+                await FollowupAsync("❌ Le salon de logs est introuvable.", ephemeral: true);
+                return;
+            }
+
             ulong discordId = user.Id;
+
+            var ModeratorName = Context.User.Username;
 
             var player = await _playerService.GetPlayerByDiscordByIDAsync(discordId);
 
@@ -65,6 +76,15 @@ namespace DiscordBot.Commands
                     ephemeral: true
                 );
 
+                await channel.SendMessageAsync(
+                    $"🔨 **BAN AUTOMATIQUE**\n" +
+                    $"**Joueur :** {player.DiscordName}\n" +
+                    $"**Discord :** {user.Mention} (`{discordId}`)\n" +
+                    $"**Raison :** 3 warns atteints\n" +
+                    $"**Dernier warn :** {reason}\n" +
+                    $"**Modérateur :** {Context.User.Mention}"
+                );
+
                 return;
             }
 
@@ -74,6 +94,42 @@ namespace DiscordBot.Commands
                 $"**Raison :** {reason}",
                 ephemeral: true
             );
+
+            var ShowWarnEmbed = new EmbedBuilder()
+    .WithTitle("⚠️ Avertissement enregistré")
+    .WithColor(new Color(255, 170, 0))
+    .WithThumbnailUrl(user.GetDisplayAvatarUrl())
+    .WithDescription("Un avertissement a été ajouté au dossier du joueur.")
+    .AddField(
+        "👤 Informations joueur",
+        $"**Nom** : {player.DiscordName}\n" +
+        $"**Mention** : {user.Mention}\n" +
+        $"**ID** : `{discordId}`",
+        true
+    )
+    .AddField(
+        "📋 Sanction",
+        $"**Type** : Warn\n" +
+        $"**Compteur** : `{newWarnCount}/3`\n" +
+        $"**Statut** : Actif",
+        true
+    )
+    .AddField(
+        "📝 Motif",
+        $"```{reason}```",
+        false
+    )
+    .AddField(
+        "🛡️ Modération",
+        $"**Staff** : {Context.User.Mention}\n" +
+        $"**Date** : <t:{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}:F>",
+        false
+    )
+    .WithFooter("Système de modération")
+    .WithCurrentTimestamp()
+    .Build();
+
+            await channel.SendMessageAsync(embed: ShowWarnEmbed);
         }
     }
 }

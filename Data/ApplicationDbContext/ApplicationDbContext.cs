@@ -1,5 +1,6 @@
 ﻿using ClassLibrary1.Models;
 using ClassLibrary1.Models.pasImplemente;
+using Data.Models;
 using FivemCsharpCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,9 +42,22 @@ public class ApplicationDbContext : DbContext
     public DbSet<PlayerVehicles> PlayerVehicles => Set<PlayerVehicles>();
     public DbSet<Jobs> Jobs => Set<Jobs>();
     public DbSet<JobGrades> JobGrades => Set<JobGrades>();
+    public DbSet<Identifiers> Identifiers => Set<Identifiers>();
 
     // Permissions
     public DbSet<Roles> Roles => Set<Roles>();
     public DbSet<Permissions> Permissions => Set<Permissions>();
     public DbSet<RolePermissions> RolePermissions => Set<RolePermissions>();
+
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+
+
+
+    }
 }
