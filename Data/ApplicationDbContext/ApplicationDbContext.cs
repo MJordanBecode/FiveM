@@ -14,7 +14,7 @@ public class ApplicationDbContext : DbContext
     }
 
     // Banque
-    public DbSet<BankAccounts> BankAccounts => Set<BankAccounts>();
+    public DbSet<BankAccounts> BankAccountssss => Set<BankAccounts>();
     public DbSet<BankTransactions> BankTransactions => Set<BankTransactions>();
 
     // Véhicules
@@ -34,7 +34,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ItemEffects> ItemEffects => Set<ItemEffects>();
 
     // Joueurs / métiers
-    public DbSet<Players> Players => Set<Players>();
+    public DbSet<Players> Playersssss => Set<Players>();
     public DbSet<RolePlayers> RolePlayers => Set<RolePlayers>();
     public DbSet<PlayerJobs> PlayerJobs => Set<PlayerJobs>();
     public DbSet<PlayerSkins> PlayerSkins => Set<PlayerSkins>();
@@ -55,9 +55,5 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-
-
-
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,12 +19,12 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Location = table.Column<string>(type: "longtext", nullable: false)
+                    Location = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -38,15 +38,15 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    MaxSlots = table.Column<short>(type: "smallint", nullable: false),
-                    MinSlots = table.Column<short>(type: "smallint", nullable: false),
+                    MaxSlots = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)1),
+                    MinSlots = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)0),
                     Price = table.Column<long>(type: "bigint", nullable: false),
-                    VehicleType = table.Column<string>(type: "longtext", nullable: false)
+                    VehicleType = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -60,12 +60,12 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     BaseWeight = table.Column<int>(type: "int", nullable: false),
                     MaxSlots = table.Column<short>(type: "smallint", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -79,12 +79,12 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Label = table.Column<string>(type: "longtext", nullable: false)
+                    Label = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -98,12 +98,12 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Logo = table.Column<string>(type: "longtext", nullable: false)
+                    Logo = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -117,10 +117,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    PermissionName = table.Column<string>(type: "longtext", nullable: false)
+                    PermissionName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -130,22 +130,48 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    FirstName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LastName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    BirthDay = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Height = table.Column<short>(type: "smallint", nullable: true),
+                    Gender = table.Column<string>(type: "varchar(1)", maxLength: 1, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    BankAccountID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ConnectionOnce = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
+                    IsWhitelisted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.ID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "PlayerSkins",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Face = table.Column<string>(type: "longtext", nullable: false)
+                    Face = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Hair = table.Column<string>(type: "longtext", nullable: false)
+                    Hair = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Clothes = table.Column<string>(type: "longtext", nullable: false)
+                    Clothes = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Props = table.Column<string>(type: "longtext", nullable: true)
+                    Props = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Overlays = table.Column<string>(type: "longtext", nullable: true)
+                    Overlays = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -159,12 +185,12 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    RoleName = table.Column<string>(type: "longtext", nullable: false)
+                    RoleName = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Label = table.Column<string>(type: "longtext", nullable: false)
+                    Label = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -178,10 +204,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -195,17 +221,17 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    OwnerType = table.Column<string>(type: "longtext", nullable: false)
+                    OwnerType = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    OwnerID = table.Column<string>(type: "longtext", nullable: false)
+                    OwnerID = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Position = table.Column<string>(type: "longtext", nullable: false)
+                    Position = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     GarageCategoryID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -225,17 +251,17 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    OwnerID = table.Column<string>(type: "longtext", nullable: false)
+                    OwnerID = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    OwnerType = table.Column<string>(type: "longtext", nullable: false)
+                    OwnerType = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    BonusWeight = table.Column<short>(type: "smallint", nullable: false),
-                    BonusSlots = table.Column<short>(type: "smallint", nullable: false),
-                    InventoryName = table.Column<string>(type: "longtext", nullable: false)
+                    BonusWeight = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)0),
+                    BonusSlots = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)0),
+                    InventoryName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     InventoryTypeID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -257,17 +283,17 @@ namespace Data.Migrations
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Label = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                    Label = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Weight = table.Column<short>(type: "smallint", nullable: false),
                     Stackable = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     MaxStack = table.Column<short>(type: "smallint", nullable: false),
-                    MinStack = table.Column<short>(type: "smallint", nullable: false),
-                    Description = table.Column<string>(type: "longtext", nullable: false)
+                    MinStack = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)1),
+                    Description = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CategoryID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -283,6 +309,62 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "BankAccounts",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Pin = table.Column<string>(type: "varchar(6)", maxLength: 6, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsActived = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
+                    Balance = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    MonZizi = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BankAccounts", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_BankAccounts_Players_PlayerID",
+                        column: x => x.PlayerID,
+                        principalTable: "Players",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Identifiers",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    FiveMLicense = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DiscordLicense = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SteamLicense = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Identifiers", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Identifiers_Players_PlayerID",
+                        column: x => x.PlayerID,
+                        principalTable: "Players",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "PlayerCharacters",
                 columns: table => new
                 {
@@ -290,22 +372,22 @@ namespace Data.Migrations
                     PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     PlayerSkinID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PlayerCharacters", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_PlayerCharacters_PlayerSkins_PlayerID",
-                        column: x => x.PlayerID,
+                        name: "FK_PlayerCharacters_PlayerSkins_PlayerSkinID",
+                        column: x => x.PlayerSkinID,
                         principalTable: "PlayerSkins",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PlayerCharacters_PlayerSkins_PlayerSkinID",
-                        column: x => x.PlayerSkinID,
-                        principalTable: "PlayerSkins",
+                        name: "FK_PlayerCharacters_Players_PlayerID",
+                        column: x => x.PlayerID,
+                        principalTable: "Players",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -316,13 +398,13 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Level = table.Column<short>(type: "smallint", nullable: false),
                     JobID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     RoleID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -351,7 +433,7 @@ namespace Data.Migrations
                     RolesID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     PermissionsID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -373,18 +455,47 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "RolePlayers",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoleID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolePlayers", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RolePlayers_Players_PlayerID",
+                        column: x => x.PlayerID,
+                        principalTable: "Players",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RolePlayers_Roles_RoleID",
+                        column: x => x.RoleID,
+                        principalTable: "Roles",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Vehicles",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    SpawnName = table.Column<string>(type: "longtext", nullable: false)
+                    SpawnName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    BasePrice = table.Column<long>(type: "bigint", nullable: false),
+                    BasePrice = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     CategoryID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -400,16 +511,57 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "InventoryItems",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Quantity = table.Column<short>(type: "smallint", nullable: false),
+                    Durability = table.Column<byte>(type: "tinyint unsigned", nullable: false, defaultValue: (byte)100),
+                    Metadata = table.Column<string>(type: "json", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Slots = table.Column<short>(type: "smallint", nullable: false),
+                    PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    InventoryID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ItemID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InventoryItems", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_InventoryItems_Inventories_InventoryID",
+                        column: x => x.InventoryID,
+                        principalTable: "Inventories",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InventoryItems_Items_ItemID",
+                        column: x => x.ItemID,
+                        principalTable: "Items",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InventoryItems_Players_PlayerID",
+                        column: x => x.PlayerID,
+                        principalTable: "Players",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ItemEffects",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    EffectType = table.Column<string>(type: "longtext", nullable: false)
+                    EffectType = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ValueType = table.Column<short>(type: "smallint", nullable: false),
                     ItemID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -425,77 +577,18 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "CarDealerVehicles",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Price = table.Column<long>(type: "bigint", nullable: false),
-                    Stock = table.Column<short>(type: "smallint", nullable: false),
-                    VehicleID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CarDealerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    GarageID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CarDealerVehicles", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_CarDealerVehicles_CarDealers_CarDealerID",
-                        column: x => x.CarDealerID,
-                        principalTable: "CarDealers",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CarDealerVehicles_Garages_GarageID",
-                        column: x => x.GarageID,
-                        principalTable: "Garages",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CarDealerVehicles_Vehicles_VehicleID",
-                        column: x => x.VehicleID,
-                        principalTable: "Vehicles",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "BankAccounts",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Pin = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    IsActived = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Balance = table.Column<long>(type: "bigint", nullable: false),
-                    PlayerID = table.Column<int>(type: "int", nullable: false),
-                    PlayerID1 = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BankAccounts", x => x.ID);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "BankTransactions",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Type = table.Column<string>(type: "longtext", nullable: false)
+                    Type = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Amout = table.Column<long>(type: "bigint", nullable: false),
-                    Description = table.Column<string>(type: "longtext", nullable: false)
+                    Description = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     BankAccountID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -511,76 +604,6 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Players",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    FiveMLicense = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    DiscordLicense = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SteamLicense = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    BirthDay = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Height = table.Column<short>(type: "smallint", nullable: false),
-                    Gender = table.Column<string>(type: "varchar(1)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    AccountID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Players", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Players_BankTransactions_AccountID",
-                        column: x => x.AccountID,
-                        principalTable: "BankTransactions",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "InventoryItems",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Quantity = table.Column<short>(type: "smallint", nullable: false),
-                    Durability = table.Column<byte>(type: "tinyint unsigned", nullable: false),
-                    Metadata = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Slots = table.Column<short>(type: "smallint", nullable: false),
-                    PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    InventoryID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InventoryItems", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_InventoryItems_Inventories_InventoryID",
-                        column: x => x.InventoryID,
-                        principalTable: "Inventories",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InventoryItems_Players_PlayerID",
-                        column: x => x.PlayerID,
-                        principalTable: "Players",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "PlayerJobs",
                 columns: table => new
                 {
@@ -589,7 +612,7 @@ namespace Data.Migrations
                     JobID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     JobGradeID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -617,22 +640,60 @@ namespace Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "CarDealerVehicles",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Price = table.Column<long>(type: "bigint", nullable: false),
+                    Stock = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)0),
+                    VehicleID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CarDealerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    GarageID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CarDealerVehicles", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_CarDealerVehicles_CarDealers_CarDealerID",
+                        column: x => x.CarDealerID,
+                        principalTable: "CarDealers",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CarDealerVehicles_Garages_GarageID",
+                        column: x => x.GarageID,
+                        principalTable: "Garages",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CarDealerVehicles_Vehicles_VehicleID",
+                        column: x => x.VehicleID,
+                        principalTable: "Vehicles",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "PlayerVehicles",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Plate = table.Column<string>(type: "longtext", nullable: false)
+                    Plate = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Fuel = table.Column<short>(type: "smallint", nullable: false),
                     EngineHealth = table.Column<short>(type: "smallint", nullable: false),
                     BodyHealth = table.Column<short>(type: "smallint", nullable: false),
                     State = table.Column<short>(type: "smallint", nullable: false),
-                    VehicleProps = table.Column<string>(type: "longtext", nullable: true)
+                    VehicleProps = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     VehicleID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -653,39 +714,11 @@ namespace Data.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "RolePlayers",
-                columns: table => new
-                {
-                    ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    RoleID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RolePlayers", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_RolePlayers_Players_PlayerID",
-                        column: x => x.PlayerID,
-                        principalTable: "Players",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RolePlayers_Roles_RoleID",
-                        column: x => x.RoleID,
-                        principalTable: "Roles",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.CreateIndex(
-                name: "IX_BankAccounts_PlayerID1",
+                name: "IX_BankAccounts_PlayerID",
                 table: "BankAccounts",
-                column: "PlayerID1");
+                column: "PlayerID",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BankTransactions_BankAccountID",
@@ -693,9 +726,16 @@ namespace Data.Migrations
                 column: "BankAccountID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CarDealerVehicles_CarDealerID",
+                name: "IX_CarDealers_Name",
+                table: "CarDealers",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CarDealerVehicles_CarDealerID_VehicleID",
                 table: "CarDealerVehicles",
-                column: "CarDealerID");
+                columns: new[] { "CarDealerID", "VehicleID" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CarDealerVehicles_GarageID",
@@ -708,9 +748,44 @@ namespace Data.Migrations
                 column: "VehicleID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GarageCategories_Name",
+                table: "GarageCategories",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Garages_GarageCategoryID",
                 table: "Garages",
                 column: "GarageCategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Garages_OwnerType_OwnerID",
+                table: "Garages",
+                columns: new[] { "OwnerType", "OwnerID" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identifiers_DiscordLicense",
+                table: "Identifiers",
+                column: "DiscordLicense",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identifiers_FiveMLicense",
+                table: "Identifiers",
+                column: "FiveMLicense",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identifiers_PlayerID",
+                table: "Identifiers",
+                column: "PlayerID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Identifiers_SteamLicense",
+                table: "Identifiers",
+                column: "SteamLicense",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventories_InventoryTypeID",
@@ -718,14 +793,36 @@ namespace Data.Migrations
                 column: "InventoryTypeID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Inventories_OwnerType_OwnerID",
+                table: "Inventories",
+                columns: new[] { "OwnerType", "OwnerID" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InventoryItems_InventoryID",
                 table: "InventoryItems",
                 column: "InventoryID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InventoryItems_ItemID",
+                table: "InventoryItems",
+                column: "ItemID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InventoryItems_PlayerID",
                 table: "InventoryItems",
                 column: "PlayerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryTypes_Name",
+                table: "InventoryTypes",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemCategories_Name",
+                table: "ItemCategories",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemEffects_ItemID",
@@ -738,9 +835,16 @@ namespace Data.Migrations
                 column: "CategoryID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobGrades_JobID",
+                name: "IX_Items_Name",
+                table: "Items",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobGrades_JobID_Level",
                 table: "JobGrades",
-                column: "JobID");
+                columns: new[] { "JobID", "Level" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobGrades_RoleID",
@@ -748,9 +852,21 @@ namespace Data.Migrations
                 column: "RoleID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayerCharacters_PlayerID",
+                name: "IX_Jobs_Name",
+                table: "Jobs",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Permissions_PermissionName",
+                table: "Permissions",
+                column: "PermissionName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerCharacters_PlayerID_PlayerSkinID",
                 table: "PlayerCharacters",
-                column: "PlayerID");
+                columns: new[] { "PlayerID", "PlayerSkinID" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayerCharacters_PlayerSkinID",
@@ -768,14 +884,16 @@ namespace Data.Migrations
                 column: "JobID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayerJobs_PlayerID",
+                name: "IX_PlayerJobs_PlayerID_JobID",
                 table: "PlayerJobs",
-                column: "PlayerID");
+                columns: new[] { "PlayerID", "JobID" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Players_AccountID",
-                table: "Players",
-                column: "AccountID");
+                name: "IX_PlayerVehicles_Plate",
+                table: "PlayerVehicles",
+                column: "Plate",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlayerVehicles_PlayerID",
@@ -793,9 +911,10 @@ namespace Data.Migrations
                 column: "PermissionsID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermissions_RolesID",
+                name: "IX_RolePermissions_RolesID_PermissionsID",
                 table: "RolePermissions",
-                column: "RolesID");
+                columns: new[] { "RolesID", "PermissionsID" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RolePlayers_PlayerID",
@@ -803,33 +922,46 @@ namespace Data.Migrations
                 column: "PlayerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePlayers_RoleID",
+                name: "IX_RolePlayers_RoleID_PlayerID",
                 table: "RolePlayers",
-                column: "RoleID");
+                columns: new[] { "RoleID", "PlayerID" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_RoleName",
+                table: "Roles",
+                column: "RoleName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VehicleCategories_Name",
+                table: "VehicleCategories",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicles_CategoryID",
                 table: "Vehicles",
                 column: "CategoryID");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_BankAccounts_Players_PlayerID1",
-                table: "BankAccounts",
-                column: "PlayerID1",
-                principalTable: "Players",
-                principalColumn: "ID",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_SpawnName",
+                table: "Vehicles",
+                column: "SpawnName",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_BankAccounts_Players_PlayerID1",
-                table: "BankAccounts");
+            migrationBuilder.DropTable(
+                name: "BankTransactions");
 
             migrationBuilder.DropTable(
                 name: "CarDealerVehicles");
+
+            migrationBuilder.DropTable(
+                name: "Identifiers");
 
             migrationBuilder.DropTable(
                 name: "InventoryItems");
@@ -851,6 +983,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "RolePlayers");
+
+            migrationBuilder.DropTable(
+                name: "BankAccounts");
 
             migrationBuilder.DropTable(
                 name: "CarDealers");
@@ -877,6 +1012,9 @@ namespace Data.Migrations
                 name: "Permissions");
 
             migrationBuilder.DropTable(
+                name: "Players");
+
+            migrationBuilder.DropTable(
                 name: "GarageCategories");
 
             migrationBuilder.DropTable(
@@ -893,15 +1031,6 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "VehicleCategories");
-
-            migrationBuilder.DropTable(
-                name: "Players");
-
-            migrationBuilder.DropTable(
-                name: "BankTransactions");
-
-            migrationBuilder.DropTable(
-                name: "BankAccounts");
         }
     }
 }

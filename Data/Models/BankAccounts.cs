@@ -1,4 +1,5 @@
 ﻿using FivemCsharpCore.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ClassLibrary1.Models

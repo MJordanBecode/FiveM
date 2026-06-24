@@ -1,29 +1,8 @@
-# ==========================================
-# ADD MIGRATION
-# ==========================================
+# Crée la migration initiale
+dotnet ef migrations add InitialMigration --no-build --project Data --startup-project Data
 
-dotnet ef migrations add InitialCreate --project Data --startup-project Api
+# Supprime la DB
+dotnet ef database drop --force --no-build --project Data --startup-project Data
 
-# ==========================================
-# UPDATE DATABASE
-# ==========================================
-
-dotnet ef database update --project Data --startup-project Api
-
-# ==========================================
-# REMOVE LAST MIGRATION
-# ==========================================
-
-dotnet ef migrations remove --project Data --startup-project Api
-
-# ==========================================
-# DROP DATABASE
-# ==========================================
-
-dotnet ef database drop --project Data --startup-project Api
-
-# ==========================================
-# LIST MIGRATIONS
-# ==========================================
-
-dotnet ef migrations list --project Data --startup-project Api
+# Recrée la DB avec la migration
+dotnet ef database update --no-build --project Data --startup-project Data

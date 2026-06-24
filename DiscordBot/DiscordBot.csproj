@@ -7,7 +7,12 @@
     <UserSecretsId>dotnet-DiscordBot-77784c2d-a3a9-4f93-8ae8-7072e656401b</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
+		<Folder Include="Migrations\" />
+		<Folder Include="Models\pasImplemente\" />
+	</ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.19.1" />
     <PackageReference Include="Discord.Net.Interactions" Version="3.19.1" />
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
