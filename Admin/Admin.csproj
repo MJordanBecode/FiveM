@@ -8,7 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\scss\" />
+    <Folder Include="Components\Pages\Player\" />
+    <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\scss\pages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BootstrapBlazor.FontAwesome" Version="10.0.1" />
   </ItemGroup>
 
 </Project>
