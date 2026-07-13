@@ -20,5 +20,7 @@ namespace DiscordBot.ModelMongoose
         public required string Grade { get; set; }
         public  bool IsDeleted { get; set; } = false;
         public  bool IsBanned { get; set; } = false;
+        public bool IsWhitelist { get; set; } = false;
+
     }
 }

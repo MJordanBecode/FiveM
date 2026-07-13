@@ -24,6 +24,7 @@ namespace DiscordBot.Interfaces
         Task<Players?> WhiteListPlayer(ulong DiscordId);
 
         Task<bool> CheckIfPlayerIsBanned(ulong discordId);
+        Task<bool> CheckIfPlayerIsWhitelisted(ulong discordId);
 
         Task<Punishments?> WarnPlayerByDiscordIDAsync(ulong discordId, string reason,PunishmentTypes punishmentTypes);
 

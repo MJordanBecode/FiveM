@@ -204,11 +204,31 @@ namespace DiscordBot.Services
             throw new NotImplementedException();
         }
 
-        public Task<Players?> WhiteListPlayer (ulong DiscordId)
+        public async Task<Players?> WhiteListPlayer(ulong DiscordId)
         {
+            if (DiscordId == 0)
+            {
+                return null;
+            }
 
-            //Intégrer l'id discord dans la DB FiveM + ajouter le role "Players" [Check comment faire]
+            var CheckIfplayerExist = await GetPlayerByDiscordByIDAsync(DiscordId);
+
+            if (CheckIfplayerExist != null)
+            {
+                var UpdateStatuWhitelist = await _db.Players.UpdateOneAsync(
+                    Builders<Players>.Filter.Eq(p => p.DiscordID, DiscordId.ToString()),
+                    Builders<Players>.Update.Set(p => p.IsWhitelist, true)
+                );
+                //return CheckIfplayerExist;
+
+                //Faire une vérification si le joueur est déjà whitelisté ou pas dans la Db FiveM
+            }
             return null;
+        }
+
+        public Task<bool> CheckIfPlayerIsWhitelisted(ulong discordId)
+        {
+            throw new NotImplementedException();
         }
 
 

@@ -1,28 +1,54 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-DiscordBot-77784c2d-a3a9-4f93-8ae8-7072e656401b</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>dotnet-DiscordBot-77784c2d-a3a9-4f93-8ae8-7072e656401b</UserSecretsId>
+	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Migrations\" />
-		<Folder Include="Models\pasImplemente\" />
+		<Compile Remove="Migrations\**" />
+		<Compile Remove="Models\**" />
+		<Content Remove="Migrations\**" />
+		<Content Remove="Models\**" />
+		<EmbeddedResource Remove="Migrations\**" />
+		<EmbeddedResource Remove="Models\**" />
+		<None Remove="Migrations\**" />
+		<None Remove="Models\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="Discord.Net" Version="3.19.1" />
-    <PackageReference Include="Discord.Net.Interactions" Version="3.19.1" />
-    <PackageReference Include="DotNetEnv" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
-    <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
-  </ItemGroup>
+	  <Content Remove="appsettings.json" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\" />
-    <Folder Include="images\" />
-    <Folder Include="Embed\" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Discord & Outils -->
+		<PackageReference Include="Discord.Net" Version="3.19.1" />
+		<PackageReference Include="Discord.Net.Interactions" Version="3.19.1" />
+		<PackageReference Include="DotNetEnv" Version="3.2.0" />
+
+		<!-- Bases de données -->
+		<PackageReference Include="MongoDB.Driver" Version="3.9.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+		<!-- Forcer la version stable existante de Pomelo -->
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+
+		<!-- Cycle de vie .NET 10 -->
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Events\" />
+		<Folder Include="images\" />
+		<Folder Include="Embed\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Data\Data.csproj" />
+	</ItemGroup>
 </Project>
