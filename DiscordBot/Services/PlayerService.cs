@@ -10,15 +10,22 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using DiscordBot.Interfaces;
+using Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace DiscordBot.Services
 {
     public class PlayerService : IPlayerInterface
     {
         private readonly MongoContext _db;
-        public PlayerService(MongoContext db)
+        private readonly ApplicationDbContext _context;
+        private readonly IFivemPlayerInterfaces _fivemService;
+        public PlayerService(MongoContext db, ApplicationDbContext Context, IFivemPlayerInterfaces fivemService)
         {
             _db = db;
+            _context = Context;
+            _fivemService = fivemService; 
         }
 
         public async Task<Players?> BanPlayerToDiscordAsync(ulong discordId, string reason, DateTime? expiresAt)
@@ -157,7 +164,7 @@ namespace DiscordBot.Services
             var discordIdString = discordId.ToString();
 
             var player = await _db.Players
-                .Find(p => p.DiscordID == discordIdString)
+                .Find(p => p.DiscordID == discordIdString.ToString())
                 .FirstOrDefaultAsync();
 
             if (player != null)
@@ -206,24 +213,62 @@ namespace DiscordBot.Services
 
         public async Task<Players?> WhiteListPlayer(ulong DiscordId)
         {
-            if (DiscordId == 0)
+            if (DiscordId == 0) return null;
+
+            // 1. On cherche le joueur dans MongoDB
+            var MonogoPlayerExist = await GetPlayerByDiscordByIDAsync(DiscordId);
+
+            // CAS 1 : Le joueur n'existe vraiment pas dans MongoDB
+            if (MonogoPlayerExist == null)
             {
+                Console.WriteLine($"[Whitelist] Échec : Aucun compte Discord trouvé dans MongoDB pour l'ID {DiscordId}.");
                 return null;
             }
 
-            var CheckIfplayerExist = await GetPlayerByDiscordByIDAsync(DiscordId);
-
-            if (CheckIfplayerExist != null)
+            // CAS 2 : Le joueur existe MAIS il est déjà Whitelisté
+            if (MonogoPlayerExist.IsWhitelist == true)
             {
-                var UpdateStatuWhitelist = await _db.Players.UpdateOneAsync(
-                    Builders<Players>.Filter.Eq(p => p.DiscordID, DiscordId.ToString()),
-                    Builders<Players>.Update.Set(p => p.IsWhitelist, true)
-                );
-                //return CheckIfplayerExist;
-
-                //Faire une vérification si le joueur est déjà whitelisté ou pas dans la Db FiveM
+                Console.WriteLine($"[Whitelist] Info : Le joueur {DiscordId} est déjà whitelisté dans MongoDB.");
+                // On renvoie quand même le joueur pour indiquer au bouton que le compte existe !
+                return MonogoPlayerExist;
             }
-            return null;
+
+            // CAS 3 : Le joueur existe et n'est pas encore Whitelisté (Traitement normal)
+            Console.WriteLine($"[Whitelist] En cours pour le joueur {DiscordId}...");
+
+            // Mise à jour MongoDB
+            await _db.Players.UpdateOneAsync(
+                Builders<Players>.Filter.Eq(p => p.DiscordID, DiscordId.ToString()),
+                Builders<Players>.Update.Set(p => p.IsWhitelist, true)
+            );
+
+            // 🌟 CORRECTION MYSQL : On convertit en string (ou $"discord:{DiscordId}" selon ton format FiveM)
+            string discordIdStr = DiscordId.ToString();
+
+            var mysqlIdentifier = await _context.Identifiers
+                .Include(i => i.Player)
+                .FirstOrDefaultAsync(i => i.DiscordLicense == ulong.Parse(discordIdStr)); // Utilisation de la string ici
+
+            if (mysqlIdentifier == null)
+            {
+                Console.WriteLine($"[MySQL] Aucun compte FiveM trouvé pour {DiscordId}. Création en cours...");
+                var newFivemPlayer = await _fivemService.CreatePlayerFivemAsync();
+                await _fivemService.CreateIdentifiersFivemAsync(DiscordId, newFivemPlayer);
+            }
+            else
+            {
+                if (mysqlIdentifier.Player != null && !mysqlIdentifier.Player.IsWhitelisted)
+                {
+                    Console.WriteLine($"[MySQL] Compte FiveM existant trouvé pour {DiscordId}. Activation de la Whitelist...");
+                    mysqlIdentifier.Player.IsWhitelisted = true;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            // On met à jour l'objet local avant de le renvoyer pour que le bot sache qu'il vient d'être activé
+            MonogoPlayerExist.IsWhitelist = true;
+            return MonogoPlayerExist;
         }
 
         public Task<bool> CheckIfPlayerIsWhitelisted(ulong discordId)

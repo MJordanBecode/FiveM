@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
+using DiscordBot.Enums;
 using DiscordBot.Interfaces;
 
 namespace DiscordBot.Commands

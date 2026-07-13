@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260622124731_InitialMigration")]
+    [Migration("20260713213039_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -46,9 +46,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
-
-                    b.Property<string>("MonZizi")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Pin")
                         .IsRequired()
@@ -853,10 +850,9 @@ namespace Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("DiscordLicense")
-                        .IsRequired()
+                    b.Property<ulong>("DiscordLicense")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<string>("FiveMLicense")
                         .HasMaxLength(64)
@@ -923,9 +919,6 @@ namespace Data.Migrations
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("BankAccountID")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("BirthDay")

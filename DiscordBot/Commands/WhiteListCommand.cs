@@ -1,82 +1,125 @@
 ﻿using Discord;
 using Discord.Interactions;
 using DiscordBot.Interfaces;
+using System;
+using System.Threading.Tasks;
+
 
 namespace DiscordBot.Commands
 {
     public class WhiteListCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly IPlayerInterface _playerService;
+
         public WhiteListCommand(IPlayerInterface playerService)
         {
             _playerService = playerService;
         }
 
-        [SlashCommand("whitelist", "Ajoute un joueur à la liste blanche")]
-        public async Task WhitelistAsync()
+        [SlashCommand("whitelist-setup", "Envoie le message interactif de liste blanche dans le salon")]
+        public async Task WhitelistSetupAsync()
         {
-            await DeferAsync(ephemeral: true);
-            
+            // Pas de DeferAsync ici si on répond directement avec le message public !
+            var showWhitelistEmbed = new EmbedBuilder()
+                .WithTitle("🛡️ WhiteList serveur")
+                .WithDescription("Pour vous enregistrer et accéder au serveur FiveM, cliquez sur le bouton ci-dessous.")
+                .WithFooter("En cliquant sur le bouton, vous acceptez le règlement du serveur.")
+                .WithColor(Color.Green);
 
-            var ShowWhitelistEmbed = new EmbedBuilder()
-                .WithTitle("WhiteList Discord")
-                .WithDescription("Pour vous white lister, cliquez sur le bouton ci-dessous.")
-                .WithFooter("En cliquant sur le bouton, vous acceptez les règles du serveur.")
-                .WithColor(Color.Green);            
+            var builder = new ComponentBuilder()
+                .WithButton("Demander la WhiteList", customId: "whitelist_button", style: ButtonStyle.Success);
 
-            var builder = new ComponentBuilder().WithButton("WhiteList", customId: "whitelist_button", style: ButtonStyle.Success);
-            await RespondAsync(embed: ShowWhitelistEmbed.Build(), components: builder.Build());
-            
-            
+            // On poste le message avec le bouton dans le salon courant
+            await RespondAsync(embed: showWhitelistEmbed.Build(), components: builder.Build());
         }
+
         [ComponentInteraction("whitelist_button")]
         public async Task HandleWhitelistButton()
         {
+            Console.WriteLine($"Context.User.Id = {Context.User.Id}");
+            Console.WriteLine($"Context.User.Username = {Context.User.Username}");
+            Console.WriteLine($"Context.User.GlobalName = {Context.User.GlobalName}");
+
+            await DeferAsync(ephemeral: true);
+
             ulong targetChannelId = 1516826402979315853;
             var channel = Context.Client.GetChannel(targetChannelId) as IMessageChannel;
-            var user = Context.User.GlobalName;
-            var userID = 'a';
-            var color = new Color(184, 247, 74); 
 
-            if (user == null)
+            var userPseudo = Context.User.GlobalName ?? Context.User.Username;
+            ulong userID = Context.User.Id;
+
+            var color = new Color(184, 247, 74);
+
+            Console.WriteLine($"[Bouton WL] Clic reçu de : {userPseudo} ({userID})");
+
+
+            // 1. Vérification AVANT de lancer la whitelist
+            var existingPlayer = await _playerService.GetPlayerByDiscordByIDAsync(userID);
+
+
+            if (existingPlayer == null)
             {
-                await FollowupAsync("❌ Impossible de récupérer le nom d'utilisateur.", ephemeral: true);
+                await FollowupAsync(
+                    "❌ Votre compte Discord n'est pas enregistré dans notre base de données. Veuillez contacter un administrateur.",
+                    ephemeral: true
+                );
+
                 return;
             }
 
-            if (userID == 0)
+
+            if (existingPlayer.IsWhitelist)
             {
-                await FollowupAsync("❌ Impossible de récupérer l'ID de l'utilisateur.", ephemeral: true);
+                await FollowupAsync(
+                    $"ℹ️ {Context.User.Mention}, vous êtes déjà enregistré sur la Whitelist !",
+                    ephemeral: true
+                );
+
                 return;
             }
 
-            //Faire une vérification pour voir si le joueur à déjà été whitelisté sur le serveur FiveM et Discord.
+
+            // 2. Passage whitelist
+            var playerResult = await _playerService.WhiteListPlayer(userID);
 
 
-            var checkIfPlayerIsWhitelisted = await _playerService.WhiteListPlayer(userID);
-
-            if(checkIfPlayerIsWhitelisted != null)
+            if (playerResult == null)
             {
-                await FollowupAsync("❌ Vous êtes déjà sur la liste blanche.", ephemeral: true);
+                await FollowupAsync(
+                    "❌ Une erreur est survenue pendant votre inscription à la Whitelist.",
+                    ephemeral: true
+                );
+
                 return;
             }
-           
-            var Test = new EmbedBuilder()
-                .WithTitle("WhiteList")
-                .WithDescription($"{user} à été Whitelisté sur Discord et FiveM")
-                .WithFooter(text: $"{DateTime.Now}")
-                .WithColor(color);
 
-            Console.Write($"Voici toutes les données récupéres au moment du clic : User: {user}, UserID: {userID}");
 
-            if (channel == null)
+            // 3. Message joueur
+            await FollowupAsync(
+                $"🎉 {Context.User.Mention}, vous avez été ajouté à la Whitelist avec succès !",
+                ephemeral: true
+            );
+
+
+            // 4. Log staff
+            if (channel != null)
             {
-                await FollowupAsync("❌ GetChannel retourne null.", ephemeral: true);
-                return;
+                var logEmbed = new EmbedBuilder()
+                    .WithTitle("Nouvelle Whitelist")
+                    .WithDescription(
+                        $"**Utilisateur :** {Context.User.Mention} ({userPseudo})\n" +
+                        $"**Discord ID :** `{userID}`\n" +
+                        $"**Statut :** Activé sur Discord et FiveM"
+                    )
+                    .WithFooter($"Le {DateTime.Now:dd/MM/yyyy à HH:mm}")
+                    .WithColor(color);
+
+                await channel.SendMessageAsync(embed: logEmbed.Build());
             }
-            await RespondAsync($"{Context.User.Mention} a été ajouté à la Whitelist !", ephemeral: true);
-            await channel.SendMessageAsync(embed: Test.Build());
+            else
+            {
+                Console.WriteLine($"[Erreur Log] Impossible de trouver le salon {targetChannelId}");
+            }
         }
     }
-
 }

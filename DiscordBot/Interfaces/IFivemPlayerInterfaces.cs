@@ -11,14 +11,10 @@ namespace DiscordBot.Interfaces
 {
     public interface IFivemPlayerInterfaces
     {
-        public Task<Players> CreatePlayerFivemAsync()
-        {
-            return null;
-        }
+        public Task<Players> CreatePlayerFivemAsync();
 
-        public Task<Identifiers> CreateIdentifiersFivemAsync()
-        {
-            return null;
-        }
-}
+
+        public Task<Identifiers> CreateIdentifiersFivemAsync(ulong DiscordId, Players player);
+
+    }
 }

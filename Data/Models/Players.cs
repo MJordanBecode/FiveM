@@ -14,7 +14,7 @@ namespace FivemCsharpCore.Models
         public char? Gender { get; set; }
         //public Guid IdentifierID { get; set; }
 
-        public Guid? BankAccountID { get; set; } //Bank
+        //public Guid? BankAccountID { get; set; } //Bank
         public required BankAccounts? BankAccount { get; set; }
         public required Identifiers? Identifier { get; set; }
 

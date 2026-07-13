@@ -44,9 +44,6 @@ namespace Data.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("MonZizi")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Pin")
                         .IsRequired()
                         .HasMaxLength(6)
@@ -850,10 +847,9 @@ namespace Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("DiscordLicense")
-                        .IsRequired()
+                    b.Property<ulong>("DiscordLicense")
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<string>("FiveMLicense")
                         .HasMaxLength(64)
@@ -920,9 +916,6 @@ namespace Data.Migrations
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("BankAccountID")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("BirthDay")
