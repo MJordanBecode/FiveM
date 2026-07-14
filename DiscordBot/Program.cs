@@ -6,6 +6,8 @@ using DotNetEnv;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore; 
+using Data.Context;
 
 Env.TraversePath().Load();
 
@@ -23,6 +25,14 @@ var guildId = ulong.Parse(
     ?? throw new InvalidOperationException("DISCORD_GUILD introuvable")
 );
 
+var mysqlServer = Environment.GetEnvironmentVariable("ServerMsql") ?? "localhost";
+var mysqlDatabase = Environment.GetEnvironmentVariable("DatabaseMysql") ?? "lostgenrp";
+var mysqlUser = Environment.GetEnvironmentVariable("UserMySql") ?? "root";
+var mysqlPassword = Environment.GetEnvironmentVariable("PasswordMySql") ?? "";
+
+string mysqlConnectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION")
+    ?? $"server={mysqlServer};port=3306;database={mysqlDatabase};user={mysqlUser};password={mysqlPassword}";
+
 string connectionUri = $"mongodb+srv://{mongoDbUserName}:{mongoDbPassword}@cluster0.velxzps.mongodb.net/?appName=Cluster0";
 var mongoContext = new MongoContext(connectionUri);
 
@@ -31,7 +41,13 @@ Console.WriteLine($"[MongoDB] Connexion OK — {count} joueurs en base.");
 
 var services = new ServiceCollection()
     .AddSingleton(mongoContext)
-    .AddSingleton<IPlayerInterface, PlayerService>()
+    .AddDbContext<ApplicationDbContext>(options =>
+        options.UseMySql(
+            mysqlConnectionString,
+            Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect(mysqlConnectionString)
+        ))
+    .AddScoped<IPlayerInterface, PlayerService>()
+    .AddScoped<IFivemPlayerInterfaces, FiveMPlayerService>()
     .BuildServiceProvider();
 
 var playerService = services.GetRequiredService<IPlayerInterface>();

@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Scripts/">
+    <File Path="Data/Scripts/reset-db.ps1" />
+  </Folder>
   <Folder Name="/Éléments de solution/">
     <File Path=".env" />
     <File Path=".env.example" />

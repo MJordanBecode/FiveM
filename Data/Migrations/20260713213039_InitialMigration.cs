@@ -142,7 +142,6 @@ namespace Data.Migrations
                     Height = table.Column<short>(type: "smallint", nullable: true),
                     Gender = table.Column<string>(type: "varchar(1)", maxLength: 1, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    BankAccountID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ConnectionOnce = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     IsWhitelisted = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -317,8 +316,6 @@ namespace Data.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActived = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true),
                     Balance = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
-                    MonZizi = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
@@ -343,8 +340,7 @@ namespace Data.Migrations
                     ID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     FiveMLicense = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DiscordLicense = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DiscordLicense = table.Column<ulong>(type: "bigint unsigned", maxLength: 64, nullable: false),
                     SteamLicense = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PlayerID = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),

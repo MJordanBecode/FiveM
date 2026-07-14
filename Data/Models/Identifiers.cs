@@ -8,7 +8,7 @@ namespace Data.Models
     public class Identifiers : BaseModel
     {
         public required string? FiveMLicense { get; set; }
-        public required string DiscordLicense { get; set; }
+        public required ulong DiscordLicense { get; set; }
         public required string? SteamLicense { get; set; }
 
         public Guid PlayerID { get; set; }

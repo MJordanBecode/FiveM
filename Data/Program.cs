@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Data
 {
@@ -59,16 +60,19 @@ namespace Data
 
         private static void LaunchResetDbScript()
         {
-            var solutionRoot = Path.GetFullPath(
-                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..")
+            var solutionRoot = FindSolutionRoot();
+
+            var scriptPath = Path.Combine(
+                solutionRoot,
+                "Scripts",
+                "reset-db.ps1"
             );
 
-            var scriptPath = Path.Combine(solutionRoot, "Scripts", "reset-db.ps1");
+            Console.WriteLine($"Recherche du script : {scriptPath}");
 
             if (!File.Exists(scriptPath))
             {
                 Console.WriteLine($"Script introuvable : {scriptPath}");
-                Console.WriteLine("Appuie sur une touche pour quitter...");
                 Console.ReadKey();
                 return;
             }
@@ -82,6 +86,27 @@ namespace Data
             });
 
             Console.WriteLine("Script reset-db.ps1 lancé.");
+        }
+
+        private static string FindSolutionRoot()
+        {
+            var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+            while (directory != null)
+            {
+                var scriptsFolder = Path.Combine(directory.FullName, "Scripts");
+
+                if (Directory.Exists(scriptsFolder))
+                {
+                    return directory.FullName;
+                }
+
+                directory = directory.Parent;
+            }
+
+            throw new DirectoryNotFoundException(
+                "Impossible de trouver la racine CsharpCore."
+            );
         }
     }
 }
