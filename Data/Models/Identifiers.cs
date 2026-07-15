@@ -7,12 +7,12 @@ namespace Data.Models
 {
     public class Identifiers : BaseModel
     {
-        public required string? FiveMLicense { get; set; }
-        public required ulong DiscordLicense { get; set; }
-        public required string? SteamLicense { get; set; }
+        public  string? FiveMLicense { get; set; }
+        public  ulong DiscordLicense { get; set; }
+        public  string? SteamLicense { get; set; }
 
         public Guid PlayerID { get; set; }
 
-        public required Players Player { get; set; }
+        public  Players Player { get; set; }
     }
 }

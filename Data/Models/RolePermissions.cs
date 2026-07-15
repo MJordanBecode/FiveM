@@ -11,7 +11,7 @@ namespace ClassLibrary1.Models
         public Guid RolesID { get; set; }
         public Guid PermissionsID { get; set; }
 
-        public required Roles Roles { get; set; }
-        public required Permissions Permissions { get; set; }
+        public  Roles Roles { get; set; }
+        public  Permissions Permissions { get; set; }
     }
 }

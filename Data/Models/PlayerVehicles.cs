@@ -9,7 +9,7 @@ namespace ClassLibrary1.Models.pasImplemente
 {
     public class PlayerVehicles : BaseModel
     {
-        public required string Plate { get; set; }
+        public  string Plate { get; set; }
         public short Fuel { get; set; }
         public short EngineHealth { get; set; }
         public short BodyHealth { get; set; }
@@ -19,8 +19,8 @@ namespace ClassLibrary1.Models.pasImplemente
         public Guid VehicleID { get; set; }
         public Guid PlayerID { get; set; }
 
-        public required Vehicles Vehicle { get; set; }
-        public required Players Player { get; set; }
+        public  Vehicles Vehicle { get; set; }
+        public  Players Player { get; set; }
 
     }
 }

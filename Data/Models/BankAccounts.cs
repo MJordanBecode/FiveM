@@ -7,13 +7,13 @@ namespace ClassLibrary1.Models
     public class BankAccounts : BaseModel
     {
 
-        public required string Pin { get; set; }
+        public  string Pin { get; set; }
         public bool IsActived { get; set; } = true;
         public long Balance { get; set; }
 
-        public required Guid PlayerID { get; set; }
+        public  Guid PlayerID { get; set; }
 
-        public required Players Player { get; set; }
+        public  Players Player { get; set; }
 
     }
 }

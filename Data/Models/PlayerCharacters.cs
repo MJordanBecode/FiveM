@@ -12,8 +12,8 @@ namespace ClassLibrary1.Models
     {    
      public Guid PlayerID { get; set; }
      public Guid PlayerSkinID { get; set; }
-     public required Players Player { get; set; }
-     public required PlayerSkins PlayerSkin { get; set; }
+     public  Players Player { get; set; }
+     public  PlayerSkins PlayerSkin { get; set; }
 
     }
 }

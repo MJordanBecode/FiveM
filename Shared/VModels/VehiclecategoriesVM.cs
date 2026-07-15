@@ -10,7 +10,7 @@ namespace ClassLibrary1.Models
 {
     public class VehiclecategoriesVM : BaseModelVM
     {
-        public required string Name { get; set; }
+        public  string Name { get; set; }
 
     }
 }

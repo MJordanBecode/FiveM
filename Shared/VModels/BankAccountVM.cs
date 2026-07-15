@@ -6,13 +6,13 @@ namespace ClassLibrary1.Models
     public class BankAccountVM : BaseModelVM
     {
 
-        public required string Pin { get; set; }
+        public  string Pin { get; set; }
         public bool IsActived { get; set; } = true;
         public long Balance { get; set; }
 
-        public required int PlayerID { get; set; }
+        public  int PlayerID { get; set; }
 
-        public required PlayersVM Player { get; set; }
+        public  PlayersVM Player { get; set; }
 
     }
 }

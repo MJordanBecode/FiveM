@@ -8,7 +8,7 @@ namespace ClassLibrary1.Models
 {
     public class Roles : BaseModel
     {
-        public required string RoleName { get; set; }
-        public required string Label { get; set; }
+        public  string RoleName { get; set; }
+        public  string Label { get; set; }
     }
 }

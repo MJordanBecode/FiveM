@@ -8,6 +8,6 @@ namespace ClassLibrary1.Models
 {
     public class PermissionsVM : BaseModelVM
     {
-        public required string PermissionName { get; set; } 
+        public  string PermissionName { get; set; } 
     }
 }

@@ -9,10 +9,10 @@ namespace ClassLibrary1.Models
 {
     public class BankTransactions : BaseModel
     {
-        public required string Type { get; set; }
+        public  string Type { get; set; }
         public long Amout { get; set; }
-        public required string Description { get; set; }
+        public  string Description { get; set; }
         public Guid BankAccountID { get; set; }
-        public required BankAccounts BankAccount { get; set; }
+        public  BankAccounts BankAccount { get; set; }
     }
 }

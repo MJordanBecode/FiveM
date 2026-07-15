@@ -8,7 +8,7 @@ namespace ClassLibrary1.Models
 {
     public class JobsVM : BaseModelVM
     {
-        public required string Name { get; set; }
-        public required string Logo { get; set; }
+        public  string Name { get; set; }
+        public  string Logo { get; set; }
     }
 }

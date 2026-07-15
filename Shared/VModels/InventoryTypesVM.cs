@@ -9,8 +9,8 @@ namespace ClassLibrary1.Models
 {
     public class InventoryTypesVM : BaseModelVM
     {
-        public required string Name { get; set; }
-        public required int BaseWeight { get; set; }
+        public  string Name { get; set; }
+        public  int BaseWeight { get; set; }
         public short MaxSlots { get; set; }
     }
 }

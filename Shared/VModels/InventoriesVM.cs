@@ -9,14 +9,14 @@ namespace ClassLibrary1.Models
 {
     public class InventoriesVM : BaseModelVM
     { 
-        public required string OwnerID {  get; set; }
-        public required string OwnerType { get; set; }
+        public  string OwnerID {  get; set; }
+        public  string OwnerType { get; set; }
         public short BonusWeight { get; set; } = 0;
         public short BonusSlots { get; set; } = 0;
-        public required string InventoryName { get; set; }
-        public required Guid InventoryTypeID { get; set; }
+        public  string InventoryName { get; set; }
+        public  Guid InventoryTypeID { get; set; }
 
-        public required InventoryTypesVM InventoryType { get; set; }
+        public  InventoryTypesVM InventoryType { get; set; }
 
     }
 }

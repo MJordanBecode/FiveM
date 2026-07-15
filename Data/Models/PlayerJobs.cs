@@ -10,8 +10,8 @@ namespace FivemCsharpCore.Models
         public Guid JobID { get; set; }
         public Guid JobGradeID { get; set; }
 
-        public required Players Player { get; set; }
-        public required Jobs Job { get; set; }
-        public required JobGrades JobGrade { get; set; }
+        public  Players Player { get; set; }
+        public  Jobs Job { get; set; }
+        public  JobGrades JobGrade { get; set; }
     }
 }

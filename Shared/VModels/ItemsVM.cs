@@ -12,12 +12,12 @@ namespace ClassLibrary1.Models
     {
         [Required]
         [MaxLength(30)]
-        public required string Name { get; set; }
+        public  string Name { get; set; }
         [Required]
         [MaxLength(30)]
-        public required string Label { get; set; } = string.Empty;
+        public  string Label { get; set; } = string.Empty;
         [Required]
-        public required short Weight { get; set; }
+        public  short Weight { get; set; }
         [Required]
         public bool Stackable { get; set; }
         [Required]
@@ -27,7 +27,7 @@ namespace ClassLibrary1.Models
         public string Description { get; set; } = string.Empty;
 
         public Guid CategoryID { get; set; }
-        public required ItemCategoriesVM Category { get; set; }
+        public  ItemCategoriesVM Category { get; set; }
 
 
     }

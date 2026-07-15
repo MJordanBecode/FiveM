@@ -8,12 +8,12 @@ namespace ClassLibrary1.Models
 {
     public class GarageCategories : BaseModel
     {
-        public required string Name { get; set; }
+        public  string Name { get; set; }
         public short MaxSlots { get; set; } = 1;
         public short MinSlots { get; set; } = 0;
         public long Price { get; set; } 
 
-        public required string VehicleType { get; set; } //format json ["car", "boat", "aircraft"]
+        public  string VehicleType { get; set; } //format json ["car", "boat", "aircraft"]
 
     }
 }

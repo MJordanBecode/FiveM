@@ -4,8 +4,8 @@ namespace DiscordBot.ModelMongoose
 {
     public class PlayerBans : BaseModel
     {
-        public required string PlayerID { get; set; }
-        public required string PlayerBanID { get; set; }
+        public  string PlayerID { get; set; }
+        public  string PlayerBanID { get; set; }
 
         [BsonIgnore]
         public Players? Players { get; set; }

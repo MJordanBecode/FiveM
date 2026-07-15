@@ -8,12 +8,12 @@ namespace ClassLibrary1.Models
 {
     public class JobGradesVM : BaseModelVM
     {
-        public required string Name { get; set; }
+        public  string Name { get; set; }
         public short Level { get; set; }
         public Guid JobID { get; set; }
         public Guid RoleID { get; set; }
 
-        public required JobsVM Job { get; set; }
-        public required RolesVM Role { get; set; }
+        public  JobsVM Job { get; set; }
+        public  RolesVM Role { get; set; }
     }
 }

@@ -5,14 +5,15 @@
   <Folder Name="/Éléments de solution/">
     <File Path=".env" />
     <File Path=".env.example" />
+    <File Path="Server/Server.csproj" />
   </Folder>
   <Project Path="Admin/Admin.csproj" Id="7b123b7b-225c-49a5-902e-b90d337186a2" />
   <Project Path="Api/Api.csproj" />
-  <Project Path="ClassLibrary1/Server.csproj" Id="9c255be2-ccdb-43b8-99cb-f336e7691785" />
   <Project Path="Client/Client.csproj" Id="dd2e09d3-a479-4fab-9ef2-392a4a07dad0" />
   <Project Path="ConsoleFiveM/ConsoleFiveM.csproj" Id="8bc767ff-f72d-4f18-a648-a5f08799a5a7" />
   <Project Path="Data/Data.csproj" Id="e2962440-0cb0-46d4-a38a-0e6baba11fe7" />
   <Project Path="DiscordBot/DiscordBot.csproj" Id="3f5748c7-06b0-4216-80f0-82e822333ea3" />
+  <Project Path="Server/Server.csproj" Id="9c255be2-ccdb-43b8-99cb-f336e7691785" />
   <Project Path="Services/Services.csproj" Id="8dbd7e97-1ddd-4ce7-a5c1-e87b29fa4183" />
   <Project Path="Shared/Shared.csproj" Id="1b8fe404-ba5b-4762-aed0-22f1d43a8a91" />
   <Project Path="WebClient/WebClient.csproj" Id="238408da-20aa-411f-8523-933bb2b394da" />

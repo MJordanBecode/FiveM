@@ -14,8 +14,8 @@ namespace ClassLibrary1.Models
         public Guid CarDealerID { get; set; }
         public Guid GarageID { get; set; }
 
-        public required VehiclesVM Vehicle { get; set; }
-        public required CarDealersVM CarDealer { get; set; }
-        public required GaragesVM Garage { get; set; }
+        public  VehiclesVM Vehicle { get; set; }
+        public  CarDealersVM CarDealer { get; set; }
+        public  GaragesVM Garage { get; set; }
     }
 }

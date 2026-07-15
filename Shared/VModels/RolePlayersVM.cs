@@ -12,7 +12,7 @@ namespace ClassLibrary1.Models
         public Guid RoleID { get; set; }
         public Guid PlayerID { get; set; }
 
-        public required RolesVM Role { get; set; }
-        public required PlayersVM Player { get; set; }
+        public  RolesVM Role { get; set; }
+        public  PlayersVM Player { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace ClassLibrary1.Models
 {
     public class ItemCategories : BaseModel
     {
-       public required string Name { get; set; }
+       public  string Name { get; set; }
        public string Label { get; set; } = string.Empty;
     }
 }

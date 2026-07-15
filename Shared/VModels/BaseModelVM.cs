@@ -10,6 +10,6 @@ namespace ClassLibrary1.Models
     {
         public Guid ID { get; set; } = Guid.NewGuid();
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public required string CreatedBy { get; set; }  
+        public  string CreatedBy { get; set; }  
     }
 }
