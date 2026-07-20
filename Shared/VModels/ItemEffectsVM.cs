@@ -1,9 +1,9 @@
-﻿using FivemCsharpCore.Models;
+﻿using Shared.VModels;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace ClassLibrary1.Models
+namespace Shared.VModels
 {
     public class ItemEffectsVM : BaseModelVM
     {

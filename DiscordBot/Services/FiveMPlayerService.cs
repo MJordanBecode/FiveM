@@ -1,7 +1,5 @@
-﻿using ClassLibrary1.Models;
+﻿using Data.Models;
 using Data.Context;
-using Data.Models;
-using FivemCsharpCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

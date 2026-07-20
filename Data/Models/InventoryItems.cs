@@ -1,9 +1,9 @@
-﻿using FivemCsharpCore.Models;
+﻿using Data.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace ClassLibrary1.Models
+namespace Data.Models
 {
     public class InventoryItems : BaseModel
     {

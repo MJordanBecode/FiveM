@@ -1,8 +1,8 @@
-﻿using ClassLibrary1.Models;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Shared.VModels;
 
-namespace FivemCsharpCore.Models
+namespace Shared.VModels
 {
     public class PlayerJobsVM : BaseModelVM
     {

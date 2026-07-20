@@ -139,6 +139,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\PlayerConnecting.cs" />
     <Compile Include="Core\ServerBootstrapper.cs" />
     <Compile Include="Controllers\ConnectionController.cs" />
     <Compile Include="Managers\IPlayerManager.cs" />
@@ -149,6 +150,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{e2962440-0cb0-46d4-a38a-0e6baba11fe7}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Services\Services.csproj">
       <Project>{8dbd7e97-1ddd-4ce7-a5c1-e87b29fa4183}</Project>
       <Name>Services</Name>
@@ -160,7 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
-      <Version>6.0.0</Version>
+      <Version>3.1.32</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

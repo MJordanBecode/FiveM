@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lostgen.Server.Interfaces
+namespace Lostgen.Server.Managers
 {
     public interface IPlayerManager
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace ClassLibrary1.Models
+namespace Data.Models
 {
     public class ItemCategories : BaseModel
     {

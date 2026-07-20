@@ -3,10 +3,7 @@ using System;
 using Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
-#nullable disable
 
 namespace Data.Migrations
 {
@@ -17,56 +14,54 @@ namespace Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "3.1.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("ClassLibrary1.Models.BankAccounts", b =>
+            modelBuilder.Entity("Data.Models.BankAccounts", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<long>("Balance")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(0L);
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<bool>("IsActived")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(true);
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Pin")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("varchar(6)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("PlayerID")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("TEEEEST")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
                     b.HasIndex("PlayerID")
                         .IsUnique();
 
-                    b.ToTable("BankAccounts", (string)null);
+                    b.ToTable("BankAccounts");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.BankTransactions", b =>
+            modelBuilder.Entity("Data.Models.BankTransactions", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<long>("Amout")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint");
 
                     b.Property<Guid>("BankAccountID")
@@ -76,25 +71,25 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
                     b.HasIndex("BankAccountID");
 
-                    b.ToTable("BankTransactions", (string)null);
+                    b.ToTable("BankTransactions");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.CarDealerVehicles", b =>
+            modelBuilder.Entity("Data.Models.CarDealerVehicles", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -107,7 +102,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("GarageID")
                         .HasColumnType("char(36)");
@@ -116,26 +112,23 @@ namespace Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<short>("Stock")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)0);
+                        .HasColumnType("smallint");
 
                     b.Property<Guid>("VehicleID")
                         .HasColumnType("char(36)");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("CarDealerID");
+
                     b.HasIndex("GarageID");
 
                     b.HasIndex("VehicleID");
 
-                    b.HasIndex("CarDealerID", "VehicleID")
-                        .IsUnique();
-
-                    b.ToTable("CarDealerVehicles", (string)null);
+                    b.ToTable("CarDealerVehicles");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.CarDealers", b =>
+            modelBuilder.Entity("Data.Models.CarDealers", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -145,25 +138,23 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Location")
-                        .HasColumnType("json");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("CarDealers", (string)null);
+                    b.ToTable("CarDealers");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.GarageCategories", b =>
+            modelBuilder.Entity("Data.Models.GarageCategories", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -173,39 +164,32 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<short>("MaxSlots")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)1);
+                        .HasColumnType("smallint");
 
                     b.Property<short>("MinSlots")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)0);
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
 
                     b.Property<string>("VehicleType")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("GarageCategories", (string)null);
+                    b.ToTable("GarageCategories");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Garages", b =>
+            modelBuilder.Entity("Data.Models.Garages", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -215,88 +199,110 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("GarageCategoryID")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("OwnerID")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("OwnerType")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Position")
-                        .HasColumnType("json");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
                     b.HasIndex("GarageCategoryID");
 
-                    b.HasIndex("OwnerType", "OwnerID");
-
-                    b.ToTable("Garages", (string)null);
+                    b.ToTable("Garages");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Inventories", b =>
+            modelBuilder.Entity("Data.Models.Identifiers", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<ulong>("DiscordLicense")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("FiveMLicense")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<Guid>("PlayerID")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("SteamLicense")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PlayerID")
+                        .IsUnique();
+
+                    b.ToTable("Identifiers");
+                });
+
+            modelBuilder.Entity("Data.Models.Inventories", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<short>("BonusSlots")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)0);
+                        .HasColumnType("smallint");
 
                     b.Property<short>("BonusWeight")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)0);
+                        .HasColumnType("smallint");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("InventoryName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("InventoryTypeID")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("OwnerID")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("OwnerType")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
                     b.HasIndex("InventoryTypeID");
 
-                    b.HasIndex("OwnerType", "OwnerID");
-
-                    b.ToTable("Inventories", (string)null);
+                    b.ToTable("Inventories");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.InventoryItems", b =>
+            modelBuilder.Entity("Data.Models.InventoryItems", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -306,12 +312,11 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<byte>("Durability")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint unsigned")
-                        .HasDefaultValue((byte)100);
+                        .HasColumnType("tinyint unsigned");
 
                     b.Property<Guid>("InventoryID")
                         .HasColumnType("char(36)");
@@ -320,7 +325,8 @@ namespace Data.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Metadata")
-                        .HasColumnType("json");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("PlayerID")
                         .HasColumnType("char(36)");
@@ -339,10 +345,10 @@ namespace Data.Migrations
 
                     b.HasIndex("PlayerID");
 
-                    b.ToTable("InventoryItems", (string)null);
+                    b.ToTable("InventoryItems");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.InventoryTypes", b =>
+            modelBuilder.Entity("Data.Models.InventoryTypes", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -355,25 +361,22 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<short>("MaxSlots")
                         .HasColumnType("smallint");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("InventoryTypes", (string)null);
+                    b.ToTable("InventoryTypes");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.ItemCategories", b =>
+            modelBuilder.Entity("Data.Models.ItemCategories", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -383,26 +386,23 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Label")
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar(60)");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("ItemCategories", (string)null);
+                    b.ToTable("ItemCategories");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.ItemEffects", b =>
+            modelBuilder.Entity("Data.Models.ItemEffects", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -412,12 +412,12 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("EffectType")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("ItemID")
                         .HasColumnType("char(36)");
@@ -429,10 +429,10 @@ namespace Data.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("ItemEffects", (string)null);
+                    b.ToTable("ItemEffects");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Items", b =>
+            modelBuilder.Entity("Data.Models.Items", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -445,29 +445,28 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Label")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar(60)");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<short>("MaxStack")
                         .HasColumnType("smallint");
 
                     b.Property<short>("MinStack")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)1);
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("varchar(30) CHARACTER SET utf8mb4")
+                        .HasMaxLength(30);
 
                     b.Property<bool>("Stackable")
                         .HasColumnType("tinyint(1)");
@@ -479,13 +478,10 @@ namespace Data.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.JobGrades", b =>
+            modelBuilder.Entity("Data.Models.JobGrades", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -495,7 +491,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("JobID")
                         .HasColumnType("char(36)");
@@ -505,23 +502,21 @@ namespace Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("RoleID")
                         .HasColumnType("char(36)");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("JobID");
+
                     b.HasIndex("RoleID");
 
-                    b.HasIndex("JobID", "Level")
-                        .IsUnique();
-
-                    b.ToTable("JobGrades", (string)null);
+                    b.ToTable("JobGrades");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Jobs", b =>
+            modelBuilder.Entity("Data.Models.Jobs", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -531,26 +526,23 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Logo")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Jobs", (string)null);
+                    b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Permissions", b =>
+            modelBuilder.Entity("Data.Models.Permissions", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -560,22 +552,19 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("PermissionName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("PermissionName")
-                        .IsUnique();
-
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.PlayerCharacters", b =>
+            modelBuilder.Entity("Data.Models.PlayerCharacters", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -585,7 +574,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("PlayerID")
                         .HasColumnType("char(36)");
@@ -595,46 +585,14 @@ namespace Data.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("PlayerID");
+
                     b.HasIndex("PlayerSkinID");
 
-                    b.HasIndex("PlayerID", "PlayerSkinID");
-
-                    b.ToTable("PlayerCharacters", (string)null);
+                    b.ToTable("PlayerCharacters");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.PlayerSkins", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Clothes")
-                        .HasColumnType("json");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Face")
-                        .HasColumnType("json");
-
-                    b.Property<string>("Hair")
-                        .HasColumnType("json");
-
-                    b.Property<string>("Overlays")
-                        .HasColumnType("json");
-
-                    b.Property<string>("Props")
-                        .HasColumnType("json");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("PlayerSkins", (string)null);
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.RolePermissions", b =>
+            modelBuilder.Entity("Data.Models.PlayerJobs", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -644,252 +602,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("PermissionsID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("RolesID")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("PermissionsID");
-
-                    b.HasIndex("RolesID", "PermissionsID")
-                        .IsUnique();
-
-                    b.ToTable("RolePermissions", (string)null);
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.RolePlayers", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("PlayerID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("RoleID")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("PlayerID");
-
-                    b.HasIndex("RoleID", "PlayerID")
-                        .IsUnique();
-
-                    b.ToTable("RolePlayers", (string)null);
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.Roles", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Label")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("varchar(25)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RoleName")
-                        .IsUnique();
-
-                    b.ToTable("Roles", (string)null);
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.Vehiclecategories", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("VehicleCategories", (string)null);
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.Vehicles", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<long>("BasePrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(0L);
-
-                    b.Property<Guid>("CategoryID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("SpawnName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CategoryID");
-
-                    b.HasIndex("SpawnName")
-                        .IsUnique();
-
-                    b.ToTable("Vehicles", (string)null);
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.pasImplemente.PlayerVehicles", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<short>("BodyHealth")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<short>("EngineHealth")
-                        .HasColumnType("smallint");
-
-                    b.Property<short>("Fuel")
-                        .HasColumnType("smallint");
-
-                    b.Property<string>("Plate")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<Guid>("PlayerID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<short>("State")
-                        .HasColumnType("smallint");
-
-                    b.Property<Guid>("VehicleID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("VehicleProps")
-                        .HasColumnType("json");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Plate")
-                        .IsUnique();
-
-                    b.HasIndex("PlayerID");
-
-                    b.HasIndex("VehicleID");
-
-                    b.ToTable("PlayerVehicles", (string)null);
-                });
-
-            modelBuilder.Entity("Data.Models.Identifiers", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<ulong>("DiscordLicense")
-                        .HasMaxLength(64)
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<string>("FiveMLicense")
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<Guid>("PlayerID")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("SteamLicense")
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DiscordLicense")
-                        .IsUnique();
-
-                    b.HasIndex("FiveMLicense")
-                        .IsUnique();
-
-                    b.HasIndex("PlayerID")
-                        .IsUnique();
-
-                    b.HasIndex("SteamLicense")
-                        .IsUnique();
-
-                    b.ToTable("Identifiers", (string)null);
-                });
-
-            modelBuilder.Entity("FivemCsharpCore.Models.PlayerJobs", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid>("JobGradeID")
                         .HasColumnType("char(36)");
@@ -906,13 +620,95 @@ namespace Data.Migrations
 
                     b.HasIndex("JobID");
 
-                    b.HasIndex("PlayerID", "JobID")
-                        .IsUnique();
+                    b.HasIndex("PlayerID");
 
-                    b.ToTable("PlayerJobs", (string)null);
+                    b.ToTable("PlayerJobs");
                 });
 
-            modelBuilder.Entity("FivemCsharpCore.Models.Players", b =>
+            modelBuilder.Entity("Data.Models.PlayerSkins", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Clothes")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Face")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Hair")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Overlays")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Props")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PlayerSkins");
+                });
+
+            modelBuilder.Entity("Data.Models.PlayerVehicles", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<short>("BodyHealth")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<short>("EngineHealth")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("Fuel")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Plate")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<Guid>("PlayerID")
+                        .HasColumnType("char(36)");
+
+                    b.Property<short>("State")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid>("VehicleID")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("VehicleProps")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PlayerID");
+
+                    b.HasIndex("VehicleID");
+
+                    b.ToTable("PlayerVehicles");
+                });
+
+            modelBuilder.Entity("Data.Models.Players", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -922,310 +718,399 @@ namespace Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("ConnectionOnce")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Gender")
-                        .HasMaxLength(1)
-                        .HasColumnType("varchar(1)");
+                        .HasColumnType("varchar(1) CHARACTER SET utf8mb4");
 
                     b.Property<short?>("Height")
                         .HasColumnType("smallint");
 
                     b.Property<bool>("IsWhitelisted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(true);
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("ID");
 
-                    b.ToTable("Players", (string)null);
+                    b.ToTable("Players");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.BankAccounts", b =>
+            modelBuilder.Entity("Data.Models.RolePermissions", b =>
                 {
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<Guid>("PermissionsID")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("RolesID")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PermissionsID");
+
+                    b.HasIndex("RolesID");
+
+                    b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("Data.Models.RolePlayers", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<Guid>("PlayerID")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("RoleID")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PlayerID");
+
+                    b.HasIndex("RoleID");
+
+                    b.ToTable("RolePlayers");
+                });
+
+            modelBuilder.Entity("Data.Models.Roles", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Data.Models.Vehiclecategories", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("VehicleCategories");
+                });
+
+            modelBuilder.Entity("Data.Models.Vehicles", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<long>("BasePrice")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("CategoryID")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("SpawnName")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("EFMigrationsDataHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MigrationId")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EFMigrationsDataHistories");
+                });
+
+            modelBuilder.Entity("Data.Models.BankAccounts", b =>
+                {
+                    b.HasOne("Data.Models.Players", "Player")
                         .WithOne("BankAccount")
-                        .HasForeignKey("ClassLibrary1.Models.BankAccounts", "PlayerID")
+                        .HasForeignKey("Data.Models.BankAccounts", "PlayerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.BankTransactions", b =>
+            modelBuilder.Entity("Data.Models.BankTransactions", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.BankAccounts", "BankAccount")
+                    b.HasOne("Data.Models.BankAccounts", "BankAccount")
                         .WithMany()
                         .HasForeignKey("BankAccountID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BankAccount");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.CarDealerVehicles", b =>
+            modelBuilder.Entity("Data.Models.CarDealerVehicles", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.CarDealers", "CarDealer")
+                    b.HasOne("Data.Models.CarDealers", "CarDealer")
                         .WithMany()
                         .HasForeignKey("CarDealerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassLibrary1.Models.Garages", "Garage")
+                    b.HasOne("Data.Models.Garages", "Garage")
                         .WithMany()
                         .HasForeignKey("GarageID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassLibrary1.Models.Vehicles", "Vehicle")
+                    b.HasOne("Data.Models.Vehicles", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CarDealer");
-
-                    b.Navigation("Garage");
-
-                    b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Garages", b =>
+            modelBuilder.Entity("Data.Models.Garages", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.GarageCategories", "GarageCategory")
+                    b.HasOne("Data.Models.GarageCategories", "GarageCategory")
                         .WithMany()
                         .HasForeignKey("GarageCategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("GarageCategory");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Inventories", b =>
+            modelBuilder.Entity("Data.Models.Identifiers", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.InventoryTypes", "InventoryType")
+                    b.HasOne("Data.Models.Players", "Player")
+                        .WithOne("Identifier")
+                        .HasForeignKey("Data.Models.Identifiers", "PlayerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Models.Inventories", b =>
+                {
+                    b.HasOne("Data.Models.InventoryTypes", "InventoryType")
                         .WithMany()
                         .HasForeignKey("InventoryTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("InventoryType");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.InventoryItems", b =>
+            modelBuilder.Entity("Data.Models.InventoryItems", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.Inventories", "Inventory")
+                    b.HasOne("Data.Models.Inventories", "Inventory")
                         .WithMany()
                         .HasForeignKey("InventoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassLibrary1.Models.Items", "Item")
+                    b.HasOne("Data.Models.Items", "Item")
                         .WithMany()
                         .HasForeignKey("ItemID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
+                    b.HasOne("Data.Models.Players", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Inventory");
-
-                    b.Navigation("Item");
-
-                    b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.ItemEffects", b =>
+            modelBuilder.Entity("Data.Models.ItemEffects", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.Items", "Item")
+                    b.HasOne("Data.Models.Items", "Item")
                         .WithMany()
                         .HasForeignKey("ItemID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.Items", b =>
+            modelBuilder.Entity("Data.Models.Items", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.ItemCategories", "Category")
+                    b.HasOne("Data.Models.ItemCategories", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.JobGrades", b =>
+            modelBuilder.Entity("Data.Models.JobGrades", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.Jobs", "Job")
+                    b.HasOne("Data.Models.Jobs", "Job")
                         .WithMany()
                         .HasForeignKey("JobID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassLibrary1.Models.Roles", "Role")
+                    b.HasOne("Data.Models.Roles", "Role")
                         .WithMany()
                         .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Job");
-
-                    b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.PlayerCharacters", b =>
+            modelBuilder.Entity("Data.Models.PlayerCharacters", b =>
                 {
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
+                    b.HasOne("Data.Models.Players", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassLibrary1.Models.PlayerSkins", "PlayerSkin")
+                    b.HasOne("Data.Models.PlayerSkins", "PlayerSkin")
                         .WithMany()
                         .HasForeignKey("PlayerSkinID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Player");
-
-                    b.Navigation("PlayerSkin");
                 });
 
-            modelBuilder.Entity("ClassLibrary1.Models.RolePermissions", b =>
+            modelBuilder.Entity("Data.Models.PlayerJobs", b =>
                 {
-                    b.HasOne("ClassLibrary1.Models.Permissions", "Permissions")
-                        .WithMany()
-                        .HasForeignKey("PermissionsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClassLibrary1.Models.Roles", "Roles")
-                        .WithMany()
-                        .HasForeignKey("RolesID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Permissions");
-
-                    b.Navigation("Roles");
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.RolePlayers", b =>
-                {
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClassLibrary1.Models.Roles", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.Vehicles", b =>
-                {
-                    b.HasOne("ClassLibrary1.Models.Vehiclecategories", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("ClassLibrary1.Models.pasImplemente.PlayerVehicles", b =>
-                {
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
-                        .WithMany()
-                        .HasForeignKey("PlayerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClassLibrary1.Models.Vehicles", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("VehicleID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("Data.Models.Identifiers", b =>
-                {
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
-                        .WithOne("Identifier")
-                        .HasForeignKey("Data.Models.Identifiers", "PlayerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
-            modelBuilder.Entity("FivemCsharpCore.Models.PlayerJobs", b =>
-                {
-                    b.HasOne("ClassLibrary1.Models.JobGrades", "JobGrade")
+                    b.HasOne("Data.Models.JobGrades", "JobGrade")
                         .WithMany()
                         .HasForeignKey("JobGradeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClassLibrary1.Models.Jobs", "Job")
+                    b.HasOne("Data.Models.Jobs", "Job")
                         .WithMany()
                         .HasForeignKey("JobID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FivemCsharpCore.Models.Players", "Player")
+                    b.HasOne("Data.Models.Players", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Models.PlayerVehicles", b =>
+                {
+                    b.HasOne("Data.Models.Players", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Job");
-
-                    b.Navigation("JobGrade");
-
-                    b.Navigation("Player");
+                    b.HasOne("Data.Models.Vehicles", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("FivemCsharpCore.Models.Players", b =>
+            modelBuilder.Entity("Data.Models.RolePermissions", b =>
                 {
-                    b.Navigation("BankAccount");
+                    b.HasOne("Data.Models.Permissions", "Permissions")
+                        .WithMany()
+                        .HasForeignKey("PermissionsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Identifier");
+                    b.HasOne("Data.Models.Roles", "Roles")
+                        .WithMany()
+                        .HasForeignKey("RolesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Models.RolePlayers", b =>
+                {
+                    b.HasOne("Data.Models.Players", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Models.Roles", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Models.Vehicles", b =>
+                {
+                    b.HasOne("Data.Models.Vehiclecategories", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

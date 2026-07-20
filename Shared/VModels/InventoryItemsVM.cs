@@ -1,9 +1,9 @@
-﻿using FivemCsharpCore.Models;
+﻿using Shared.VModels;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace ClassLibrary1.Models
+namespace Shared.VModels
 {
     public class InventoryItemsVM : BaseModelVM
     {
@@ -14,7 +14,11 @@ namespace ClassLibrary1.Models
 
         public Guid PlayerID { get; set; }
         public Guid InventoryID { get; set; }
+        public Guid ItemID { get; set; }
+
         public  PlayersVM Player { get; set; }
         public  InventoriesVM Inventory { get; set; }
+        public  ItemsVM Item { get; set; }
+
     }
 }

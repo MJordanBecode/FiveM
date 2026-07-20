@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CitizenFX.Core;
-using Lostgen.Server.Interfaces;
+using Lostgen.Server.Managers;
 
 namespace Lostgen.Server.Services
 {

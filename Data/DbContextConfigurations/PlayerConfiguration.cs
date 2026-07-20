@@ -1,6 +1,4 @@
-﻿using ClassLibrary1.Models;
-using Data.Models;
-using FivemCsharpCore.Models;
+﻿using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,20 +1,21 @@
-﻿using ClassLibrary1.Models;
-using ClassLibrary1.Models.pasImplemente;
-using Data.Models;
-using FivemCsharpCore.Models;
+﻿using Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Context;
 
 public class ApplicationDbContext : DbContext
 {
+    public ApplicationDbContext()
+    {
+    }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
 
+    public DbSet<EFMigrationsDataHistory> EFMigrationsDataHistories => Set<EFMigrationsDataHistory>();
     // Banque
-    public DbSet<BankAccounts> BankAccountssss => Set<BankAccounts>();
+    public DbSet<BankAccounts> BankAccounts => Set<BankAccounts>();
     public DbSet<BankTransactions> BankTransactions => Set<BankTransactions>();
 
     // Véhicules
@@ -54,6 +55,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        //modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 }

@@ -1,11 +1,12 @@
 <Solution>
   <Folder Name="/Scripts/">
+    <File Path="auto-update.ps1" />
     <File Path="Data/Scripts/reset-db.ps1" />
   </Folder>
   <Folder Name="/Éléments de solution/">
     <File Path=".env" />
     <File Path=".env.example" />
-    <File Path="Server/Server.csproj" />
+    <File Path="auto-update.ps1" />
   </Folder>
   <Project Path="Admin/Admin.csproj" Id="7b123b7b-225c-49a5-902e-b90d337186a2" />
   <Project Path="Api/Api.csproj" />

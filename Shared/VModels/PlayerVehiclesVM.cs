@@ -1,11 +1,11 @@
-﻿using FivemCsharpCore.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shared.VModels;
 
-namespace ClassLibrary1.Models.pasImplemente
+namespace Shared.VModels
 {
     public class PlayerVehiclesVM : BaseModelVM
     {

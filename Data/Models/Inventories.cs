@@ -5,7 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.Models
+namespace Data.Models
 {
     public class Inventories : BaseModel
     { 

@@ -1,11 +1,10 @@
-﻿using FivemCsharpCore.Models;
+﻿using Shared.VModels;
 using System.ComponentModel.DataAnnotations;
 
-namespace ClassLibrary1.Models
+namespace Shared.VModels
 {
-    public class BankAccountVM : BaseModelVM
+    public class BankAccountsVM : BaseModelVM
     {
-
         public  string Pin { get; set; }
         public bool IsActived { get; set; } = true;
         public long Balance { get; set; }

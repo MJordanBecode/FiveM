@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1.Models
+namespace Data.Models
 {
     public class Items : BaseModel
     {

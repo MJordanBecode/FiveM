@@ -1,9 +1,8 @@
-﻿using ClassLibrary1.Models;
-using Data.Models;
+﻿using Data.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace FivemCsharpCore.Models
+namespace Data.Models
 {
     public class Players : BaseModel
     {

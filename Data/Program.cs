@@ -50,9 +50,11 @@ namespace Data
 
                     services.AddDbContext<ApplicationDbContext>(options =>
                     {
+                        // Correction pour Pomelo 3.2.7 :
+                        // On définit la version manuellement (ex: 8.0.21 pour MySQL ou 10.4 pour MariaDB)
                         options.UseMySql(
                             connectionString,
-                            ServerVersion.AutoDetect(connectionString)
+                            mysqlOptions => mysqlOptions.ServerVersion(new Version(8, 0, 21), Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MySql)
                         );
                     });
                 });

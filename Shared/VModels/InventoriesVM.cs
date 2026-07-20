@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Shared.VModels;
 
-namespace ClassLibrary1.Models
+namespace Shared.VModels
 {
     public class InventoriesVM : BaseModelVM
     { 

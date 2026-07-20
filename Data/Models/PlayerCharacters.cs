@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using FivemCsharpCore.Models;
+using Data.Models;
 
-namespace ClassLibrary1.Models
+namespace Data.Models
 {
     public class PlayerCharacters : BaseModel
     {    

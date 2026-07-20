@@ -1,6 +1,6 @@
 ﻿using System;
 using CitizenFX.Core;
-using Lostgen.Server.Interfaces;
+using Lostgen.Server.Managers;
 using Shared.DTOS;
 using Lostgen.Services;
 

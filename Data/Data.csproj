@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>net10.0</TargetFramework>
+		<!-- Nettoyage : On retire le OutputType Exe pour en faire une bibliothèque de classes (Library) -->
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>11.0</LangVersion>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -10,17 +12,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+		<!-- Alignement complet sur les versions 3.1.32 / 3.2.7 déjà utilisées par le Server -->
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.32" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.32">
 			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.32" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.32">
 			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
-	</ItemGroup>
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.7" />
 
+		<!-- Versions d'extensions compatibles avec .NET Standard 2.0 / EF Core 3.1 -->
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.32" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.32" />
+	</ItemGroup>
 </Project>

@@ -1,8 +1,8 @@
-# Crée la migration initiale
-dotnet ef migrations add InitialMigration --no-build --project Data --startup-project Data
+# 1. Crée la migration avec le compilateur 3.1 (Plus de problème de collation ou de Navigation !)
+dotnet tool run dotnet-ef migrations add NomDeTaNouvelleMigration --no-build --project Data --startup-project Data
 
-# Supprime la DB
-dotnet ef database drop --force --no-build --project Data --startup-project Data
+# 2. Supprime la DB
+dotnet tool run dotnet-ef database drop --force --no-build --project Data --startup-project Data
 
-# Recrée la DB avec la migration
-dotnet ef database update --no-build --project Data --startup-project Data
+# 3. Recrée la DB à jour
+dotnet tool run dotnet-ef database update --no-build --project Data --startup-project Data

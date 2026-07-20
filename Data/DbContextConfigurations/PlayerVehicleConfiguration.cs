@@ -1,4 +1,4 @@
-﻿using ClassLibrary1.Models.pasImplemente;
+﻿using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
