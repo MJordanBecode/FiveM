@@ -1,66 +1,106 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using CitizenFX.Core.Native;
+using Microsoft.Extensions.DependencyInjection;
 using Services.Services;
-using Microsoft.Extensions.DependencyInjection; // Ne pas oublier pour GetService
 
 namespace Lostgen.Server.Core
 {
     public class PlayerConnecting : BaseScript
     {
-        // 1. Le constructeur : On s'abonne JUSTE à l'événement
         public PlayerConnecting()
         {
+            Debug.WriteLine("PlayerConnecting enregistré et géré par FiveM.");
             EventHandlers["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(OnPlayerConnecting);
         }
 
-        // 2. La méthode de connexion
         private async void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic kickReason, dynamic deferrals)
         {
             deferrals.defer();
-            await BaseScript.Delay(0);
+            await Delay(0); // On est sur le thread principal au départ
 
             deferrals.update($"Connexion en cours... Bonjour {playerName} !");
 
-            // AJUSTEMENT COHÉRENCE : On récupère le service ICI, à la demande !
-            PlayerService? playerService = null;
-            if (ServerBootstrapper.ServiceProvider != null)
+            if (ServerBootstrapper.ServiceProvider == null)
             {
-                playerService = ServerBootstrapper.ServiceProvider.GetService<PlayerService>();
-            }
-
-            // Sécurité si le conteneur ou le service n'est pas prêt
-            if (playerService == null)
-            {
-                Debug.WriteLine($"[ERROR] PlayerService introuvable au moment de la connexion de {playerName}.");
-                deferrals.done("Erreur interne du serveur : Le service de base de données n'est pas encore prêt.");
+                Debug.WriteLine($"[ERROR] ServiceProvider non initialisé au moment de la connexion de {playerName}.");
+                deferrals.done("Erreur interne du serveur : le service de base de données n'est pas encore prêt.");
                 return;
             }
 
-            // Récupération des identifiants
-            string license = player.Identifiers["license"];
-            string steamHex = player.Identifiers["steam"];
-            string discordId = player.Identifiers["discord"];
-
-            if (string.IsNullOrEmpty(license) || string.IsNullOrEmpty(steamHex) || string.IsNullOrEmpty(discordId))
+            Debug.WriteLine($"===== IDENTIFIANTS DE {playerName} =====");
+            foreach (var identifier in player.Identifiers)
             {
-                deferrals.done("Identifiants de connexion manquants (Rockstar, Steam ou Discord). Connexion refusée.");
+                Debug.WriteLine(identifier);
+            }
+            Debug.WriteLine("===========================");
+
+            string rawLicense = player.Identifiers["license"];
+            string rawSteam = player.Identifiers["steam"];
+            string rawDiscord = player.Identifiers["discord"];
+
+            if (string.IsNullOrEmpty(rawDiscord))
+            {
+                Debug.WriteLine($"[REFUS] {playerName} n'a pas de compte Discord lié.");
+                deferrals.done("Vous devez avoir votre compte Discord lié à FiveM pour vous connecter.");
                 return;
             }
+
+            if (string.IsNullOrEmpty(rawLicense) || string.IsNullOrEmpty(rawSteam))
+            {
+                Debug.WriteLine($"[ERROR] Identifiants de jeu manquants pour {playerName} (license={rawLicense}, steam={rawSteam}).");
+                deferrals.done("Impossible de récupérer vos licences de jeu (Rockstar/Steam).");
+                return;
+            }
+
+            string cleanDiscordId = rawDiscord.Replace("discord:", "");
+            string cleanLicense = rawLicense.Replace("license:", "");
+            string cleanSteamHex = rawSteam.Replace("steam:", "");
+
+            if (!ulong.TryParse(cleanDiscordId, out ulong discordIdLong))
+            {
+                Debug.WriteLine($"[ERROR] Impossible de parser l'ID Discord en ulong : {cleanDiscordId}");
+                deferrals.done("Erreur de format sur votre identifiant Discord.");
+                return;
+            }
+
+            bool isWhitelisted = false;
+            string errorMessage = string.Empty;
 
             try
             {
-                // Utilisation du service récupéré localement
-                var playerVm = await playerService.CreatePlayerAsync(license, steamHex, discordId, playerName);
+                // L'appel asynchrone BDD se fait ici (changement de thread potentiel)
+                using var scope = ServerBootstrapper.ServiceProvider.CreateScope();
+                var playerService = scope.ServiceProvider.GetRequiredService<PlayerService>();
+
+                var playerVm = await playerService.CreatePlayerAsync(cleanLicense, cleanSteamHex, discordIdLong);
+                isWhitelisted = playerVm.IsWhitelisted;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[ERROR] Échec de la connexion pour {playerName} : {ex.Message}");
-                deferrals.done("Une erreur technique est survenue lors de la vérification de votre profil.");
+                Debug.WriteLine($"[ERROR] Échec de la connexion pour {playerName} : {ex}");
+                errorMessage = "Une erreur technique est survenue lors de la vérification de votre profil.";
+            }
+
+            // 🔥 SÉCURITÉ CRITIQUE : On force le retour sur le Main Thread de FiveM avant de toucher à 'deferrals'
+            await Delay(0);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                deferrals.done(errorMessage);
                 return;
             }
 
+            if (!isWhitelisted)
+            {
+                Debug.WriteLine($"[REFUS] {playerName} (Discord: {discordIdLong}) n'est pas whitelist.");
+                deferrals.done("Vous n'êtes pas whitelist sur ce serveur.");
+                return;
+            }
+
+            Debug.WriteLine($"[OK] Joueur {playerName} synchronisé en DB (license={cleanLicense}, discord={discordIdLong}).");
+
+            // Appelé en toute sécurité sur le Main Thread
             deferrals.done();
         }
     }

@@ -1,8 +1,8 @@
-﻿// Dans le projet Lostgen.Data (qui possède EF Core)
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore; // Disponible ici !
-using Data.Context;
+﻿using Data.Context;
 using Data.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -15,8 +15,7 @@ namespace Data.Repositories
             _dbContext = dbContext;
         }
 
-        // C'est cette méthode qui va exécuter le code EF Core 
-        public async Task<Players> CreatePlayerIdentifierAsync(string license, string steamHex)
+        public async Task<Players> CreatePlayerIdentifierAsync(string license, string steamHex, ulong discordId)
         {
             var player = await GetPlayerByLicenseAsync(license);
 
@@ -28,15 +27,22 @@ namespace Data.Repositories
                     {
                         FiveMLicense = license,
                         SteamLicense = steamHex,
+                        DiscordLicense = discordId,
                     },
 
                     ConnectionOnce = false,
-                    IsWhitelisted = true,
-
+                    IsWhitelisted = discordId != 0,
                 };
 
                 _dbContext.Players.Add(player);
                 await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                if (player.Identifier.DiscordLicense != discordId)
+                {
+                    player.Identifier.DiscordLicense = discordId;
+                }
             }
 
             return player;
@@ -47,6 +53,30 @@ namespace Data.Repositories
             return await _dbContext.Players
                             .Include(p => p.Identifier)
                             .FirstOrDefaultAsync(p => p.Identifier.FiveMLicense == license);
+        }
+
+        // Recherche le joueur via son ID Discord (créé au préalable par le bot)
+        public async Task<Players> GetPlayerByDiscordIdAsync(ulong discordId)
+        {
+            return await _dbContext.Players
+                            // On inclut les identifiants liés pour pouvoir les modifier après
+                            .Include(p => p.Identifier)
+                            // On cherche le joueur dont l'un des identifiants possède le bon Discord ID
+                            .FirstOrDefaultAsync(p => p.Identifier.DiscordLicense == discordId);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            Debug.WriteLine("===== CHANGE TRACKER =====");
+
+            foreach (var e in _dbContext.ChangeTracker.Entries())
+            {
+                Debug.WriteLine($"{e.Entity.GetType().Name} -> {e.State}");
+            }
+
+            Debug.WriteLine("==========================");
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

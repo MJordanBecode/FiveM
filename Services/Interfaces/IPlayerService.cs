@@ -1,12 +1,10 @@
 ﻿using Shared.VModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Services.Interfaces
 {
     public interface IPlayerService
     {
-        Task<PlayersVM> CreatePlayerAsync(string license, string steamHex, string discordId, string playerName);
+        Task<PlayersVM> CreatePlayerAsync(string license, string steamHex, ulong discordId);
     }
 }
