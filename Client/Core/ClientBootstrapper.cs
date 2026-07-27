@@ -11,6 +11,9 @@ namespace Client.Core
 
             // Enregistrement de nos gestionnaires/scripts clients
             RegisterScripts();
+
+            // 🔥 C'est cette ligne qui prévient le serveur que le client est chargé !
+            TriggerServerEvent("lostgen:server:playerReady");
         }
 
         private void RegisterScripts()

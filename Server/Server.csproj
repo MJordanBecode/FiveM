@@ -139,7 +139,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\PlayerConnecting.cs" />
+    <Compile Include="Controllers\CharacterController.cs" />
+    <Compile Include="Modules\PlayerConnecting.cs" />
+    <Compile Include="Modules\PlayerLoaderServer.cs" />
     <Compile Include="Core\ServerBootstrapper.cs" />
     <Compile Include="Controllers\ConnectionController.cs" />
     <Compile Include="Managers\IPlayerManager.cs" />

@@ -1,13 +1,13 @@
 ﻿using CitizenFX.Core;
 using Data.Context;
 using Data.Repositories;
-//using Lostgen.Server.Controllers;
 using Lostgen.Server.Managers;
 using Lostgen.Server.Services;
 using Lostgen.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Services.Services;
+using Services.Interfaces; // Contient ICharacterService, IPlayerService, IApiService, etc.
+using Services.Services;   // Contient CharacterService, PlayerService, ApiService, etc.
 using System;
 using System.IO;
 
@@ -49,12 +49,10 @@ namespace Lostgen.Server
             services.AddScoped<PlayerRepository>();
 
             // Services métiers
-            services.AddScoped<PlayerService>();
+            services.AddScoped<IPlayerService, PlayerService>();
             services.AddSingleton<IApiService, ApiService>();
             services.AddSingleton<IPlayerManager, PlayerManager>();
-
-            // ❌ ON NE MET PLUS ConnectionController ET PlayerConnecting ICI.
-            // FiveM s'occupe de les instancier tout seul car ils héritent de BaseScript.
+            services.AddScoped<ICharacterService, CharacterService>();
         }
 
         private void StartControllers()
@@ -65,7 +63,7 @@ namespace Lostgen.Server
                 return;
             }
 
-            // Test EF Core & Génération de script de test
+            // Test EF Core & Génération du script SQL
             try
             {
                 using var scope = ServiceProvider.CreateScope();
@@ -79,9 +77,6 @@ namespace Lostgen.Server
             {
                 Debug.WriteLine($"Erreur EF Core : {ex}");
             }
-
-            // ❌ TOUT LE BLOC QUI INITIALISAIT LE ConnectionController A ÉTÉ SUPPRIMÉ ICI.
-            // Plus de conflits, plus de crashs !
 
             Debug.WriteLine("===== INITIALISATION TERMINEE =====");
         }

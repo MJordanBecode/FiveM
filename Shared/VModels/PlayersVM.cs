@@ -11,16 +11,15 @@ namespace Shared.VModels
         public DateTime? BirthDay { get; set; }
         public short? Height { get; set; }
         public char? Gender { get; set; }
-        //public Guid IdentifierID { get; set; }
-
-        //public Guid? BankAccountID { get; set; } //Bank
-        public BankAccountsVM? BankAccount { get; set; }
-        public IdentifiersVM? Identifier { get; set; }
-
         public bool ConnectionOnce { get; set; } = false;
         public bool IsWhitelisted { get; set; } = false; // OFF => not acces to server
+        public Guid? IdentifierID { get; set; }
+        public Guid? SkinID { get; set; }
 
-
+        public Guid? BankAccountID { get; set; } //Bank
+        public BankAccountsVM? BankAccount { get; set; }
+        public IdentifiersVM? Identifier { get; set; }
+        public PlayerSkinsVM? Skin { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
 

@@ -22,9 +22,15 @@ public class IdentifierConfiguration : IEntityTypeConfiguration<Identifiers>
         builder.Property(i => i.SteamLicense)
             .HasMaxLength(64);
 
+        // Index d'unicité
         builder.HasIndex(i => i.PlayerID).IsUnique();
         builder.HasIndex(i => i.DiscordLicense).IsUnique();
         builder.HasIndex(i => i.FiveMLicense).IsUnique();
         builder.HasIndex(i => i.SteamLicense).IsUnique();
+
+        builder.HasOne(i => i.Player)
+            .WithOne(p => p.Identifier)
+            .HasForeignKey<Identifiers>(i => i.PlayerID)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Services.Services;
+using Services.Interfaces; // 🟢 Utilisation de l'interface au lieu du namespace concret
 
 namespace Lostgen.Server.Core
 {
@@ -28,13 +28,6 @@ namespace Lostgen.Server.Core
                 return;
             }
 
-            Debug.WriteLine($"===== IDENTIFIANTS DE {playerName} =====");
-            foreach (var identifier in player.Identifiers)
-            {
-                Debug.WriteLine(identifier);
-            }
-            Debug.WriteLine("===========================");
-
             string rawLicense = player.Identifiers["license"];
             string rawSteam = player.Identifiers["steam"];
             string rawDiscord = player.Identifiers["discord"];
@@ -42,7 +35,7 @@ namespace Lostgen.Server.Core
             if (string.IsNullOrEmpty(rawDiscord))
             {
                 Debug.WriteLine($"[REFUS] {playerName} n'a pas de compte Discord lié.");
-                deferrals.done("Vous devez avoir votre compte Discord lié à FiveM pour vous connecter.");
+                deferrals.done("Vous devez vous connecter à Discord pour vous connecter au serveur");
                 return;
             }
 
@@ -65,16 +58,22 @@ namespace Lostgen.Server.Core
             }
 
             bool isWhitelisted = false;
+            bool connectionOnce = false;
+            Guid playerId = Guid.Empty;
             string errorMessage = string.Empty;
 
             try
             {
                 // L'appel asynchrone BDD se fait ici (changement de thread potentiel)
                 using var scope = ServerBootstrapper.ServiceProvider.CreateScope();
-                var playerService = scope.ServiceProvider.GetRequiredService<PlayerService>();
+
+                // 🟢 CORRECTION : On demande IPlayerService au lieu de PlayerService
+                var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
 
                 var playerVm = await playerService.CreatePlayerAsync(cleanLicense, cleanSteamHex, discordIdLong);
                 isWhitelisted = playerVm.IsWhitelisted;
+                connectionOnce = playerVm.ConnectionOnce; // On récupère si le perso existe déjà
+                playerId = playerVm.ID;
             }
             catch (Exception ex)
             {

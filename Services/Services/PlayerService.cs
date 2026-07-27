@@ -52,7 +52,7 @@ namespace Services.Services
                 Debug.WriteLine($"FiveM : {dbPlayer.Identifier.FiveMLicense}");
                 Debug.WriteLine($"Steam : {dbPlayer.Identifier.SteamLicense}");
 
-                dbPlayer.ConnectionOnce = true;
+                dbPlayer.ConnectionOnce = false;
 
 
 
@@ -75,6 +75,22 @@ namespace Services.Services
                 // Ajoute ici tes autres mappings (FirstName, LastName...) quand ils ne seront plus NULL
             };
 
+            return playerVm;
+        }
+
+        public async Task<PlayersVM> GetPlayerByLicenseAsync(string license)
+        {
+            Players dbPlayer = await _playerRepository.GetPlayerByLicenseAsync(license);
+            if (dbPlayer == null)
+            {
+                return null;
+            }
+            PlayersVM playerVm = new PlayersVM
+            {
+                ConnectionOnce = dbPlayer.ConnectionOnce,
+                IsWhitelisted = dbPlayer.IsWhitelisted
+                // Ajoute ici tes autres mappings (FirstName, LastName...) quand ils ne seront plus NULL
+            };
             return playerVm;
         }
     }
