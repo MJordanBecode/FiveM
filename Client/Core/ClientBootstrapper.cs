@@ -1,5 +1,6 @@
-﻿using System;
-using CitizenFX.Core;
+﻿using CitizenFX.Core;
+using Lostgen.Client.Modules.CharacterCreation;
+using System;
 
 namespace Client.Core
 {
@@ -18,8 +19,7 @@ namespace Client.Core
 
         private void RegisterScripts()
         {
-            // C'est ici qu'on démarrera nos futurs scripts clients (ex: gestion du spawn, hud, menus...)
-            // ex: new PlayerSpawnController();
+            new CharacterCreationClient();
         }
     }
 }

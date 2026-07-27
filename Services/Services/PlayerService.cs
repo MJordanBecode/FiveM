@@ -70,6 +70,7 @@ namespace Services.Services
             // 3. On prépare le ViewModel pour le serveur de jeu
             PlayersVM playerVm = new PlayersVM
             {
+                ID = dbPlayer.ID,
                 ConnectionOnce = dbPlayer.ConnectionOnce,
                 IsWhitelisted = dbPlayer.IsWhitelisted
                 // Ajoute ici tes autres mappings (FirstName, LastName...) quand ils ne seront plus NULL
@@ -87,6 +88,7 @@ namespace Services.Services
             }
             PlayersVM playerVm = new PlayersVM
             {
+                ID = dbPlayer.ID,
                 ConnectionOnce = dbPlayer.ConnectionOnce,
                 IsWhitelisted = dbPlayer.IsWhitelisted
                 // Ajoute ici tes autres mappings (FirstName, LastName...) quand ils ne seront plus NULL

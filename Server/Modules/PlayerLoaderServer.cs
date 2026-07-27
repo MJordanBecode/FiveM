@@ -51,6 +51,7 @@ namespace Lostgen.Server.Core
 
                     // 2. On envoie l'événement au client via l'objet player directement
                     // Pour éviter les conflits de types, on utilise la méthode native d'envoi d'événement :
+                    Debug.WriteLine("Envoi de l'événement au client");
                     TriggerClientEvent(player, "lostgen:client:startCharacterCreation", playerDb.ID.ToString());
                 }
                 else
