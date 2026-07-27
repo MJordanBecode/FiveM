@@ -10,6 +10,6 @@ namespace Data.Models
     {
         public Guid ID { get; set; } = Guid.NewGuid();
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public  string CreatedBy { get; set; }  
+        public  string CreatedBy { get; set; } = "LostgenRP";
     }
 }

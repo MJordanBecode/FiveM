@@ -16,7 +16,7 @@ namespace Shared.VModels
         public string? Props { get; set; }
         public string? Overlays { get; set; }
 
-        public PlayersVM? Player { get; set; }
+        public PlayerCharactersVM? Character { get; set; }
 
     }
 }

@@ -9,11 +9,30 @@ using Shared.VModels;
 namespace Shared.VModels
 {
     public class PlayerCharactersVM : BaseModelVM
-    {    
-     public Guid PlayerID { get; set; }
-     public Guid PlayerSkinID { get; set; }
-     public  PlayerSkinsVM Player { get; set; }
-     public  PlayerSkinsVM PlayerSkin { get; set; }
+    {
+        public Guid PlayerID { get; set; }
+
+
+        // Identité RP
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+
+        public DateTime? BirthDay { get; set; }
+
+        public short? Height { get; set; }
+
+        public char? Gender { get; set; }
+
+
+        // Apparence
+        public Guid? SkinID { get; set; }
+
+
+        // Relations
+
+        public PlayersVM Player { get; set; }
+
+        public PlayerSkinsVM? Skin { get; set; }
 
     }
 }

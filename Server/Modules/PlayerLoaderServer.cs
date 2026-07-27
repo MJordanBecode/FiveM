@@ -13,56 +13,145 @@ namespace Lostgen.Server.Core
             EventHandlers["lostgen:server:playerReady"] += new Action<Player>(OnPlayerReady);
         }
 
+
         private async void OnPlayerReady([FromSource] Player player)
         {
-            if (player == null) return;
+            if (player == null)
+                return;
+
 
             string rawLicense = player.Identifiers["license"];
-            if (string.IsNullOrEmpty(rawLicense)) return;
+
+            if (string.IsNullOrEmpty(rawLicense))
+                return;
+
 
             string cleanLicense = rawLicense.Replace("license:", "");
 
+
+
             try
             {
-                if (ServerBootstrapper.ServiceProvider == null) return;
+                if (ServerBootstrapper.ServiceProvider == null)
+                    return;
+
+
 
                 using var scope = ServerBootstrapper.ServiceProvider.CreateScope();
-                var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
 
-                // On récupère le joueur en BDD
-                var playerDb = await playerService.GetPlayerByLicenseAsync(cleanLicense);
 
-                if (playerDb == null) return;
+                var playerService =
+                    scope.ServiceProvider.GetRequiredService<IPlayerService>();
 
-                // 🔥 Force le retour sur le Main Thread FiveM
+
+
+                var playerDb =
+                    await playerService.GetPlayerByLicenseAsync(cleanLicense);
+
+
+
+                if (playerDb == null)
+                {
+                    Debug.WriteLine("[PlayerLoaded] Joueur introuvable.");
+                    return;
+                }
+
+
+
                 await Delay(0);
 
-                if (!playerDb.ConnectionOnce)
-                {
-                    // 🔴 PREMIÈRE CONNEXION : On l'isole et on lance la création
 
-                    // 1. On applique le Routing Bucket avec player.Handle directement (string)
+
+                bool hasCharacter =
+                    await playerService.HasCharacterAsync(playerDb.ID);
+
+
+
+                if (!hasCharacter)
+                {
+                    Debug.WriteLine(
+                        "[PlayerLoaded] Aucun personnage trouvé. Création."
+                    );
+
+
                     if (int.TryParse(player.Handle, out int playerServerId))
                     {
                         int privateBucket = 1000 + playerServerId;
-                        // API.SetPlayerRoutingBucket attend (string playerId, int bucketId)
-                        API.SetPlayerRoutingBucket(player.Handle, privateBucket);
+
+                        API.SetPlayerRoutingBucket(
+                            player.Handle,
+                            privateBucket
+                        );
                     }
 
-                    // 2. On envoie l'événement au client via l'objet player directement
-                    // Pour éviter les conflits de types, on utilise la méthode native d'envoi d'événement :
-                    Debug.WriteLine("Envoi de l'événement au client");
-                    TriggerClientEvent(player, "lostgen:client:startCharacterCreation", playerDb.ID.ToString());
+
+
+                    TriggerClientEvent(
+                        player,
+                        "lostgen:client:startCharacterCreation",
+                        playerDb.ID.ToString()
+                    );
                 }
                 else
                 {
-                    // 🟢 DÉJÀ CRÉÉ
-                    TriggerClientEvent(player, "lostgen:client:loadCharacterSkin", playerDb.Skin);
+                    Debug.WriteLine(
+                        "[PlayerLoaded] Personnage trouvé. Chargement."
+                    );
+
+
+                    var character =
+                        await playerService.GetCharacterAsync(playerDb.ID);
+
+
+
+                    if (character == null)
+                    {
+                        Debug.WriteLine(
+                            "[PlayerLoaded] Impossible de récupérer le personnage."
+                        );
+
+                        return;
+                    }
+
+
+
+                    if (character.Skin == null)
+                    {
+                        Debug.WriteLine(
+                            "[PlayerLoaded] Le personnage existe mais aucun skin trouvé."
+                        );
+
+                        return;
+                    }
+
+
+
+                    string skinJson =
+                        Newtonsoft.Json.JsonConvert.SerializeObject(
+                            character.Skin
+                        );
+
+                    Debug.WriteLine(
+                        $"Skin Face : {character.Skin?.Face}");
+
+                    Debug.WriteLine(
+                        $"Skin Hair : {character.Skin?.Hair}");
+
+                    Debug.WriteLine(
+                        $"Skin Clothes : {character.Skin?.Clothes}");
+
+                    TriggerClientEvent(
+                        player,
+                        "lostgen:client:loadCharacter",
+                        skinJson
+                    );
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[ERROR] Erreur lors du chargement de {player.Name} : {ex}");
+                Debug.WriteLine(
+                    $"[PlayerLoaded ERROR] {ex}"
+                );
             }
         }
     }

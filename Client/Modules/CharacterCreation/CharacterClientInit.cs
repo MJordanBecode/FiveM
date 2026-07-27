@@ -11,55 +11,78 @@ namespace Lostgen.Client.Modules.CharacterCreation
         private int _cam = -1;
         private Guid _currentPlayerId;
 
+
         public CharacterCreationClient()
         {
-            // Lancement de la création du personnage
+
             EventHandlers["lostgen:client:startCharacterCreation"] += new Action<string>(StartCharacterCreation);
 
-            // Spawn après la création
             EventHandlers["lostgen:client:spawnPlayerAfterCreation"] += new Action<float, float, float>(OnSpawnPlayerAfterCreation);
 
-            // Sauvegarde du personnage
+
             API.RegisterNuiCallbackType("saveCharacter");
             EventHandlers["__cfx_nui:saveCharacter"] += new Action<IDictionary<string, object>, CallbackDelegate>(OnSaveCharacterNui);
 
-            // Changement de sexe
+
             API.RegisterNuiCallbackType("changeGender");
             EventHandlers["__cfx_nui:changeGender"] += new Action<IDictionary<string, object>, CallbackDelegate>(OnChangeGenderNui);
 
-            // Génétique
+
             API.RegisterNuiCallbackType("updateHeadBlend");
-            EventHandlers["__cfx_nui:updateHeadBlend"] += new Action<IDictionary<string, object>, CallbackDelegate>((data, cb) =>
+            EventHandlers["__cfx_nui:updateHeadBlend"] += new Action<IDictionary<string, object>, CallbackDelegate>(OnUpdateHeadBlend);
+
+            API.RegisterNuiCallbackType("updateHair");
+            EventHandlers["__cfx_nui:updateHair"] +=
+                new Action<IDictionary<string, object>, CallbackDelegate>(OnUpdateHair);
+
+
+            API.RegisterNuiCallbackType("updateClothes");
+            EventHandlers["__cfx_nui:updateClothes"] +=
+                new Action<IDictionary<string, object>, CallbackDelegate>(OnUpdateClothes);
+        }
+
+
+
+        private void OnUpdateHeadBlend(IDictionary<string, object> data, CallbackDelegate cb)
+        {
+            int ped = Game.PlayerPed.Handle;
+
+
+            int shapeFirstID = Convert.ToInt32(data["shapeFirstID"]);
+            int shapeSecondID = Convert.ToInt32(data["shapeSecondID"]);
+
+
+            float shapeMix = Convert.ToSingle(data["shapeMix"]) / 100f;
+            float skinMix = Convert.ToSingle(data["skinMix"]) / 100f;
+
+
+            API.SetPedHeadBlendData(
+                ped,
+                shapeFirstID,
+                shapeSecondID,
+                0,
+                shapeFirstID,
+                shapeSecondID,
+                0,
+                shapeMix,
+                skinMix,
+                0.0f,
+                false
+            );
+
+
+            cb(new
             {
-                int ped = Game.PlayerPed.Handle;
-
-                int shapeFirstID = Convert.ToInt32(data["shapeFirstID"]);
-                int shapeSecondID = Convert.ToInt32(data["shapeSecondID"]);
-
-                float shapeMix = Convert.ToSingle(data["shapeMix"]) / 100f;
-                float skinMix = Convert.ToSingle(data["skinMix"]) / 100f;
-
-                API.SetPedHeadBlendData(
-                    ped,
-                    shapeFirstID,
-                    shapeSecondID,
-                    0,
-                    shapeFirstID,
-                    shapeSecondID,
-                    0,
-                    shapeMix,
-                    skinMix,
-                    0.0f,
-                    false
-                );
-
-                cb(new { status = "ok" });
+                status = "ok"
             });
         }
+
+
 
         private async void StartCharacterCreation(string playerIdStr)
         {
             Debug.WriteLine("========== CHARACTER CREATION ==========");
+
 
             if (!Guid.TryParse(playerIdStr, out _currentPlayerId))
             {
@@ -67,13 +90,21 @@ namespace Lostgen.Client.Modules.CharacterCreation
                 return;
             }
 
+
             Debug.WriteLine("GUID OK.");
 
-            Vector3 spawnPos = new Vector3(402.8f, -996.2f, -99.0f);
 
-            // Chargement du modèle
+            Vector3 spawnPos = new Vector3(
+                402.8f,
+                -996.2f,
+                -99.0f
+            );
+
+
             Model model = new Model("mp_m_freemode_01");
+
             await model.Request(5000);
+
 
             if (!model.IsLoaded)
             {
@@ -81,13 +112,20 @@ namespace Lostgen.Client.Modules.CharacterCreation
                 return;
             }
 
+
+
             await Game.Player.ChangeModel(model);
+
             await Delay(500);
+
 
             int ped = Game.PlayerPed.Handle;
 
+
             Debug.WriteLine($"PED : {ped}");
             Debug.WriteLine($"MODEL HASH : {Game.PlayerPed.Model.Hash}");
+
+
 
             API.NetworkResurrectLocalPlayer(
                 spawnPos.X,
@@ -98,16 +136,26 @@ namespace Lostgen.Client.Modules.CharacterCreation
                 false
             );
 
-            API.SetPedDefaultComponentVariation(ped);
-            API.SetEntityVisible(ped, true, false);
-            API.SetEntityInvincible(ped, false);
 
-            API.RequestCollisionAtCoord(spawnPos.X, spawnPos.Y, spawnPos.Z);
+            ApplyDefaultCharacterCustomization(ped);
+
+
+            API.SetEntityInvincible(ped, true);
+
+
+            API.RequestCollisionAtCoord(
+                spawnPos.X,
+                spawnPos.Y,
+                spawnPos.Z
+            );
+
 
             while (!API.HasCollisionLoadedAroundEntity(ped))
             {
                 await Delay(0);
             }
+
+
 
             API.SetEntityCoords(
                 ped,
@@ -120,54 +168,244 @@ namespace Lostgen.Client.Modules.CharacterCreation
                 false
             );
 
-            API.SetEntityHeading(ped, 180.0f);
-            API.FreezeEntityPosition(ped, true);
+
+            API.SetEntityHeading(
+                ped,
+                180f
+            );
+
+
+            API.FreezeEntityPosition(
+                ped,
+                true
+            );
+
+
 
             model.MarkAsNoLongerNeeded();
 
-            // Caméra
+
+
+            // CAMERA
+
             _cam = API.CreateCamWithParams(
                 "DEFAULT_SCRIPTED_CAMERA",
                 402.8f,
                 -997.8f,
                 -98.3f,
-                0.0f,
-                0.0f,
-                0.0f,
-                50.0f,
+                0f,
+                0f,
+                0f,
+                50f,
                 true,
                 2
             );
 
-            API.PointCamAtCoord(_cam, 402.8f, -996.2f, -98.5f);
-            API.RenderScriptCams(true, true, 1000, true, false);
 
-            // Ouvre le NUI
-            API.SetNuiFocus(true, true);
-            API.SendNuiMessage("{\"action\":\"openCharacterCreation\"}");
+            API.PointCamAtCoord(
+                _cam,
+                402.8f,
+                -996.2f,
+                -98.5f
+            );
+
+
+            API.RenderScriptCams(
+                true,
+                true,
+                1000,
+                true,
+                false
+            );
+
+
+
+            API.SetNuiFocus(
+                true,
+                true
+            );
+
+
+            API.SendNuiMessage(
+                "{\"action\":\"openCharacterCreation\"}"
+            );
+
 
             Debug.WriteLine("Création du personnage ouverte.");
         }
 
-        private void OnSaveCharacterNui(IDictionary<string, object> data, CallbackDelegate callback)
+
+
+
+        private void ApplyDefaultCharacterCustomization(int ped)
+        {
+            // Reset vêtements
+            API.SetPedDefaultComponentVariation(ped);
+
+
+
+            // Visage de base
+            //API.SetPedHeadBlendData(
+            //    ped,
+            //    0,
+            //    0,
+            //    0,
+            //    0,
+            //    0,
+            //    0,
+            //    0.5f,
+            //    0.5f,
+            //    0.0f,
+            //    false
+            //);
+
+            API.SetPedHeadBlendData(
+                ped,
+                21, // père
+                0,  // mère
+                0,
+                21,
+                0,
+                0,
+                0.5f,
+                0.5f,
+                0.0f,
+                false
+            );
+
+
+
+            // Cheveux
+            API.SetPedComponentVariation(
+                ped,
+                2,
+                0,
+                0,
+                0
+            );
+
+
+            API.SetPedHairColor(
+                ped,
+                0,
+                0
+            );
+
+
+
+            // Haut
+            API.SetPedComponentVariation(
+                ped,
+                11,
+                15,
+                0,
+                0
+            );
+
+
+            // Pantalon
+            API.SetPedComponentVariation(
+                ped,
+                4,
+                21,
+                0,
+                0
+            );
+
+
+            // Chaussures
+            API.SetPedComponentVariation(
+                ped,
+                6,
+                34,
+                0,
+                0
+            );
+
+
+
+            API.SetEntityVisible(
+                ped,
+                true,
+                false
+            );
+
+
+            API.SetEntityAlpha(
+                ped,
+                255,
+                0
+            );
+        }
+
+
+
+
+
+        private void OnSaveCharacterNui(
+            IDictionary<string, object> data,
+            CallbackDelegate callback)
         {
             try
             {
-                API.SetNuiFocus(false, false);
+                API.SetNuiFocus(
+                    false,
+                    false
+                );
 
-                string firstName = data.ContainsKey("firstName") ? data["firstName"].ToString() : "John";
-                string lastName = data.ContainsKey("lastName") ? data["lastName"].ToString() : "Doe";
-                DateTime birthDay = data.ContainsKey("birthDay")
+                int ped = Game.PlayerPed.Handle;
+
+                string firstName =
+                    data.ContainsKey("firstName")
+                    ? data["firstName"].ToString()
+                    : "John";
+
+
+                string lastName =
+                    data.ContainsKey("lastName")
+                    ? data["lastName"].ToString()
+                    : "Doe";
+
+
+                DateTime birthDay =
+                    data.ContainsKey("birthDay")
                     ? DateTime.Parse(data["birthDay"].ToString())
                     : DateTime.Now.AddYears(-20);
 
-                char gender = data.ContainsKey("gender")
+
+
+                char gender =
+                    data.ContainsKey("gender")
                     ? data["gender"].ToString()[0]
                     : 'M';
 
-                short height = data.ContainsKey("height")
+
+
+                short height =
+                    data.ContainsKey("height")
                     ? Convert.ToInt16(data["height"])
                     : (short)180;
+
+
+                // Récupération du skin envoyé par le NUI
+                string faceJson = "{}";
+                string hairJson = "{}";
+                string clothesJson = "{}";
+
+                if (data.ContainsKey("face") && data["face"] is IDictionary<string, object> faceDict)
+                    faceJson = DictToJson(faceDict);
+
+                if (data.ContainsKey("hair") && data["hair"] is IDictionary<string, object> hairDict)
+                    hairJson = DictToJson(hairDict);
+
+                if (data.ContainsKey("clothes") && data["clothes"] is IDictionary<string, object> clothesDict)
+                    clothesJson = DictToJson(clothesDict);
+
+                Debug.WriteLine("========== SKIN ENVOYE ==========");
+                Debug.WriteLine("FACE JSON : " + faceJson);
+                Debug.WriteLine("HAIR JSON : " + hairJson);
+                Debug.WriteLine("CLOTHES JSON : " + clothesJson);
+                Debug.WriteLine("=================================");
 
                 TriggerServerEvent(
                     "lostgen:server:saveCharacter",
@@ -176,64 +414,152 @@ namespace Lostgen.Client.Modules.CharacterCreation
                     lastName,
                     birthDay.ToString("o"),
                     gender.ToString(),
-                    height
+                    height,
+                    faceJson,
+                    hairJson,
+                    clothesJson
                 );
 
                 callback(new { status = "ok" });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[ERROR] {ex}");
-                callback(new
-                {
-                    status = "error",
-                    message = ex.Message
-                });
+                Debug.WriteLine("" + ex);
+                callback(new { status = "error", message = ex.Message });
             }
         }
 
-        private void OnSpawnPlayerAfterCreation(float x, float y, float z)
+        private static string DictToJson(IDictionary<string, object> dict)
+        {
+            var parts = new List<string>();
+            foreach (var kvp in dict)
+            {
+                string val = kvp.Value?.ToString() ?? "0";
+                parts.Add($"\"{kvp.Key}\":{val}");
+            }
+            return "{" + string.Join(",", parts) + "}";
+        }
+
+
+
+
+
+        private void OnSpawnPlayerAfterCreation(
+            float x,
+            float y,
+            float z)
         {
             int ped = Game.PlayerPed.Handle;
 
-            API.FreezeEntityPosition(ped, false);
-            API.SetEntityCoords(ped, x, y, z, false, false, false, false);
-            API.SetEntityHeading(ped, 0.0f);
 
-            API.RenderScriptCams(false, true, 1000, true, false);
+
+            API.FreezeEntityPosition(
+                ped,
+                false
+            );
+
+
+            API.SetEntityInvincible(
+                ped,
+                false
+            );
+
+
+
+            API.SetEntityCoords(
+                ped,
+                x,
+                y,
+                z,
+                false,
+                false,
+                false,
+                false
+            );
+
+
+
+            API.SetEntityHeading(
+                ped,
+                0f
+            );
+
+
+
+            API.RenderScriptCams(
+                false,
+                true,
+                1000,
+                true,
+                false
+            );
+
+
 
             if (API.DoesCamExist(_cam))
             {
-                API.DestroyCam(_cam, false);
+                API.DestroyCam(
+                    _cam,
+                    false
+                );
+
                 _cam = -1;
             }
         }
 
-        private async void OnChangeGenderNui(IDictionary<string, object> data, CallbackDelegate callback)
+
+
+
+
+        private async void OnChangeGenderNui(
+            IDictionary<string, object> data,
+            CallbackDelegate callback)
         {
-            string gender = data.ContainsKey("gender")
+            string gender =
+                data.ContainsKey("gender")
                 ? data["gender"].ToString()
                 : "M";
 
-            string modelName = gender == "F"
+
+            string modelName =
+                gender == "F"
                 ? "mp_f_freemode_01"
                 : "mp_m_freemode_01";
 
+
+
             Model model = new Model(modelName);
+
+
             await model.Request(5000);
+
+
 
             if (!model.IsLoaded)
             {
-                callback(new { status = "error" });
+                callback(new
+                {
+                    status = "error"
+                });
+
                 return;
             }
 
+
+
             await Game.Player.ChangeModel(model);
+
             await Delay(500);
+
+
 
             int ped = Game.PlayerPed.Handle;
 
-            API.SetPedDefaultComponentVariation(ped);
+
+
+            ApplyDefaultCharacterCustomization(ped);
+
+
 
             API.SetEntityCoords(
                 ped,
@@ -246,12 +572,105 @@ namespace Lostgen.Client.Modules.CharacterCreation
                 false
             );
 
-            API.SetEntityHeading(ped, 180.0f);
-            API.FreezeEntityPosition(ped, true);
+
+            API.SetEntityHeading(
+                ped,
+                180f
+            );
+
+
+            API.FreezeEntityPosition(
+                ped,
+                true
+            );
+
 
             model.MarkAsNoLongerNeeded();
 
-            callback(new { status = "ok" });
+
+
+            callback(new
+            {
+                status = "ok"
+            });
+        }
+
+        private void OnUpdateHair(
+    IDictionary<string, object> data,
+    CallbackDelegate cb)
+        {
+            int ped = Game.PlayerPed.Handle;
+
+
+            int drawable = Convert.ToInt32(data["drawable"]);
+            int texture = Convert.ToInt32(data["texture"]);
+            int color = Convert.ToInt32(data["color"]);
+            int highlight = Convert.ToInt32(data["highlight"]);
+
+
+            API.SetPedComponentVariation(
+                ped,
+                2,              // composant cheveux
+                drawable,
+                texture,
+                0
+            );
+
+
+            API.SetPedHairColor(
+                ped,
+                color,
+                highlight
+            );
+
+
+            cb(new
+            {
+                status = "ok"
+            });
+        }
+
+        private void OnUpdateClothes(
+    IDictionary<string, object> data,
+    CallbackDelegate cb)
+        {
+            int ped = Game.PlayerPed.Handle;
+
+
+            // Haut
+            API.SetPedComponentVariation(
+                ped,
+                11,
+                Convert.ToInt32(data["torso"]),
+                Convert.ToInt32(data["torsoTexture"]),
+                0
+            );
+
+
+            // Pantalon
+            API.SetPedComponentVariation(
+                ped,
+                4,
+                Convert.ToInt32(data["pants"]),
+                Convert.ToInt32(data["pantsTexture"]),
+                0
+            );
+
+
+            // Chaussures
+            API.SetPedComponentVariation(
+                ped,
+                6,
+                Convert.ToInt32(data["shoes"]),
+                Convert.ToInt32(data["shoesTexture"]),
+                0
+            );
+
+
+            cb(new
+            {
+                status = "ok"
+            });
         }
     }
 }

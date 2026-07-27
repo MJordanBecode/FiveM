@@ -9,11 +9,30 @@ using Data.Models;
 namespace Data.Models
 {
     public class PlayerCharacters : BaseModel
-    {    
-     public Guid PlayerID { get; set; }
-     public Guid PlayerSkinID { get; set; }
-     public  Players Player { get; set; }
-     public  PlayerSkins PlayerSkin { get; set; }
+    {
+
+
+        // Identité RP
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+
+        public DateTime? BirthDay { get; set; }
+
+        public short? Height { get; set; }
+
+        public char? Gender { get; set; }
+
+
+        // Apparence
+        public Guid PlayerID { get; set; }
+        public Guid? SkinID { get; set; }
+
+
+        // Relations
+
+        public Players Player { get; set; }
+
+        public PlayerSkins? Skin { get; set; }
 
     }
 }

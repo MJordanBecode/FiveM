@@ -19,11 +19,6 @@ namespace DiscordBot.Services
         {
             Players players = new Players
             {
-                FirstName = null,
-                LastName = null,
-                BirthDay = null,
-                Height = null,
-                Gender = null,
                 BankAccount = null,
                 ConnectionOnce = false,
                 IsWhitelisted = true,

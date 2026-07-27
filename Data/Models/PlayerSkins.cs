@@ -14,10 +14,9 @@ namespace Data.Models
         public  string Hair { get; set; } = "{}";
         public  string Clothes { get; set; } = "{}";
         public string? Props { get; set; } 
-        public string? Overlays { get; set; } 
+        public string? Overlays { get; set; }
 
-        public Players? Player { get; set; }
-
+        public PlayerCharacters? Character { get; set; }
 
     }
 }

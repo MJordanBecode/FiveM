@@ -12,26 +12,23 @@ namespace Data.Configurations
 
             builder.HasKey(p => p.ID);
 
-            builder.Property(p => p.FirstName).HasMaxLength(50);
-            builder.Property(p => p.LastName).HasMaxLength(50);
-            builder.Property(p => p.Gender).HasMaxLength(1);
 
             builder.Property(p => p.ConnectionOnce)
                 .HasDefaultValue(false);
 
-            builder.Property(p => p.IsWhitelisted)
-                .HasDefaultValue(true);
 
-            // Relation 1:1 avec Identifiers (Identifiers détient PlayerID)
+            builder.Property(p => p.IsWhitelisted)
+                .HasDefaultValue(false);
+
             builder.HasOne(p => p.Identifier)
                 .WithOne(i => i.Player)
-                .HasForeignKey<Identifiers>(i => i.PlayerID);
+                .HasForeignKey<Identifiers>(i => i.PlayerID)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Relation 1:1 avec PlayerSkins (Players détient SkinID)
-            builder.HasOne(p => p.Skin)
-                .WithOne(s => s.Player)
-                .HasForeignKey<Players>(p => p.SkinID)
-                .IsRequired(false); // Le skin peut être null au tout début avant la création du perso
+            builder.HasMany(p => p.Characters)
+                .WithOne(c => c.Player)
+                .HasForeignKey(c => c.PlayerID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

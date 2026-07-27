@@ -1,9 +1,10 @@
-﻿using Shared.VModels;
-using Services.Interfaces;
+﻿using Data.Models;
 using Data.Repositories;
-using Data.Models;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Services.Interfaces;
+using Shared.VModels;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Services.Services
 {
@@ -52,7 +53,7 @@ namespace Services.Services
                 Debug.WriteLine($"FiveM : {dbPlayer.Identifier.FiveMLicense}");
                 Debug.WriteLine($"Steam : {dbPlayer.Identifier.SteamLicense}");
 
-                dbPlayer.ConnectionOnce = false;
+                dbPlayer.ConnectionOnce = true;
 
 
 
@@ -94,6 +95,49 @@ namespace Services.Services
                 // Ajoute ici tes autres mappings (FirstName, LastName...) quand ils ne seront plus NULL
             };
             return playerVm;
+        }
+
+        public async Task<PlayerCharactersVM?> GetCharacterAsync(Guid playerId)
+        {
+            var character = await _playerRepository.GetCharacterAsync(playerId);
+
+            if(character == null)
+                return null;
+
+
+            return new PlayerCharactersVM
+            {
+                ID = character.ID,
+
+                PlayerID = character.PlayerID,
+
+                FirstName = character.FirstName,
+                LastName = character.LastName,
+
+                BirthDay = character.BirthDay,
+                Gender = character.Gender,
+                Height = character.Height,
+
+                SkinID = character.SkinID,
+
+
+                Skin = character.Skin == null ? null : new PlayerSkinsVM
+                {
+                    ID = character.Skin.ID,
+
+                    Face = character.Skin.Face,
+                    Hair = character.Skin.Hair,
+                    Clothes = character.Skin.Clothes,
+
+                    Props = character.Skin.Props,
+                    Overlays = character.Skin.Overlays
+                }
+            };
+        }
+
+        public async Task<bool> HasCharacterAsync(Guid playerId)
+        {
+            return await _playerRepository.HasCharacterAsync(playerId);
         }
     }
 }

@@ -2,28 +2,43 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Data.Configurations;
-
-public class PlayerCharacterConfiguration : IEntityTypeConfiguration<PlayerCharacters>
+namespace Data.Configurations
 {
-    public void Configure(EntityTypeBuilder<PlayerCharacters> builder)
+    public class PlayerCharacterConfiguration : IEntityTypeConfiguration<PlayerCharacters>
     {
-        builder.ToTable("PlayerCharacters");
-
-        builder.HasKey(x => x.ID);
-
-        builder.HasOne(x => x.Player)
-            .WithMany()
-            .HasForeignKey(x => x.PlayerID);
-
-        builder.HasOne(x => x.PlayerSkin)
-            .WithMany()
-            .HasForeignKey(x => x.PlayerSkinID);
-
-        builder.HasIndex(x => new
+        public void Configure(EntityTypeBuilder<PlayerCharacters> builder)
         {
-            x.PlayerID,
-            x.PlayerSkinID
-        });
+            builder.ToTable("PlayerCharacters");
+
+            builder.HasIndex(x => x.PlayerID)
+                .IsUnique();
+
+            builder.HasKey(c => c.ID);
+
+
+            builder.Property(c => c.FirstName)
+                .HasMaxLength(50);
+
+
+            builder.Property(c => c.LastName)
+                .HasMaxLength(50);
+
+
+            builder.Property(c => c.Gender)
+                .HasMaxLength(1);
+
+
+            builder.HasOne(c => c.Player)
+                .WithMany(p => p.Characters)
+                .HasForeignKey(c => c.PlayerID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(c => c.Skin)
+                .WithOne(s => s.Character)
+                .HasForeignKey<PlayerCharacters>(c => c.SkinID)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+        }
     }
 }

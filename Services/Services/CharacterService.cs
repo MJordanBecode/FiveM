@@ -2,10 +2,11 @@
 using Data.Models;
 using Lostgen.Server.Services;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Services.Interfaces;
 using Shared.DTOS;
 using System;
-using System.Text.Json;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using static Shared.DTOS.SkinDataDto;
 
@@ -20,46 +21,165 @@ namespace Services.Services
             _dbContext = dbContext;
         }
 
-        public async Task<bool> SaveCharacterCreationAsync(Guid playerId, string firstName, string lastName, DateTime birthDay, char gender, short height, FaceDataDto face, HairDataDto hair, ClothesDataDto clothes)
+
+        public async Task<bool> SaveCharacterCreationAsync(
+            Guid playerId,
+            string firstName,
+            string lastName,
+            DateTime birthDay,
+            char gender,
+            short height,
+            FaceDataDto face,
+            HairDataDto hair,
+            ClothesDataDto clothes)
         {
-            // 1. Récupérer le joueur avec son skin associé
+            // Récupération du compte joueur
             var player = await _dbContext.Players
-                .Include(p => p.Skin)
                 .FirstOrDefaultAsync(p => p.ID == playerId);
 
-            if (player == null) return false;
 
-            // 2. Mettre à jour les données civiles
-            player.FirstName = firstName;
-            player.LastName = lastName;
-            player.BirthDay = birthDay;
-            player.Gender = gender;
-            player.Height = height;
-            player.ConnectionOnce = true;
-
-            // 3. Traiter le skin
-            var skin = player.Skin ?? new PlayerSkins { ID = Guid.NewGuid() };
-            skin.Face = JsonSerializer.Serialize(face);
-            skin.Hair = JsonSerializer.Serialize(hair);
-            skin.Clothes = JsonSerializer.Serialize(clothes);
-            skin.Props = "{}";
-            skin.Overlays = "{}";
-
-            if (player.Skin == null)
+            if (player == null)
             {
-                player.Skin = skin;
-                player.SkinID = skin.ID;
+                Debug.WriteLine(
+                    $"[CharacterService] Joueur introuvable : {playerId}"
+                );
+
+                return false;
             }
 
-            // 4. Sauvegarder en BDD
-            await _dbContext.SaveChangesAsync();
-            return true;
+
+            Debug.WriteLine("========== PLAYER ==========");
+            Debug.WriteLine($"Player ID : {player.ID}");
+            Debug.WriteLine("============================");
+
+
+
+            // Vérifie si un personnage existe déjà
+            var existingCharacter = await _dbContext.PlayerCharacters
+                .AnyAsync(c => c.PlayerID == player.ID);
+
+
+            if (existingCharacter)
+            {
+                Debug.WriteLine(
+                    "[CharacterService] Le joueur possède déjà un personnage."
+                );
+
+                return false;
+            }
+
+
+
+            // Création du skin
+            var skinId = Guid.NewGuid();
+
+            var skin = new PlayerSkins
+            {
+                ID = skinId,
+
+                Face = JsonConvert.SerializeObject(face),
+                Hair = JsonConvert.SerializeObject(hair),
+                Clothes = JsonConvert.SerializeObject(clothes),
+
+                Props = "{}",
+                Overlays = "{}",
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "LostgenRP"
+            };
+
+
+
+            // Création du personnage
+            var character = new PlayerCharacters
+            {
+                ID = Guid.NewGuid(),
+
+                PlayerID = player.ID,
+
+                SkinID = skinId,
+
+                FirstName = firstName,
+                LastName = lastName,
+
+                BirthDay = birthDay,
+                Gender = gender,
+                Height = height,
+
+                Skin = skin
+            };
+
+
+
+            // Le compte a déjà été connecté
+            player.ConnectionOnce = true;
+
+
+
+            await _dbContext.PlayerSkins.AddAsync(skin);
+
+            await _dbContext.PlayerCharacters.AddAsync(character);
+
+
+
+            Debug.WriteLine("========== CHANGE TRACKER ==========");
+
+            foreach (var entry in _dbContext.ChangeTracker.Entries())
+            {
+                Debug.WriteLine(
+                    $"{entry.Entity.GetType().Name} => {entry.State}"
+                );
+            }
+
+            Debug.WriteLine("====================================");
+
+
+
+            try
+            {
+                Debug.WriteLine("[CharacterService] Avant SaveChanges");
+
+                await _dbContext.SaveChangesAsync();
+
+                Debug.WriteLine("[CharacterService] Après SaveChanges");
+
+                return true;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Debug.WriteLine(
+                    "========== CONCURRENCY EXCEPTION =========="
+                );
+
+                foreach (var entry in ex.Entries)
+                {
+                    Debug.WriteLine(
+                        $"Entity : {entry.Entity.GetType().Name} | State : {entry.State}"
+                    );
+                }
+
+                Debug.WriteLine(ex);
+
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    "========== SAVE EXCEPTION =========="
+                );
+
+                Debug.WriteLine(ex);
+
+                throw;
+            }
         }
+
+
 
         public async Task<bool> HasCharacterAsync(Guid playerId)
         {
-            return await _dbContext.Players
-                .AnyAsync(p => p.ID == playerId && p.ConnectionOnce);
+            return await _dbContext.PlayerCharacters
+                .AnyAsync(c => c.PlayerID == playerId);
         }
     }
 }

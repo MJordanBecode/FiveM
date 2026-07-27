@@ -13,10 +13,20 @@ namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
     {
         public CharacterController()
         {
-            EventHandlers["lostgen:server:saveCharacter"] += new Action<Player, string, string, string, string, string, short>(OnSaveCharacter);
+            EventHandlers["lostgen:server:saveCharacter"] += new Action<Player, string, string, string, string, string, short, string, string, string>(OnSaveCharacter);
         }
 
-        private async void OnSaveCharacter([FromSource] Player player, string playerIdStr, string firstName, string lastName, string birthDayStr, string genderStr, short height)
+        private async void OnSaveCharacter(
+            [FromSource] Player player,
+            string playerIdStr,
+            string firstName,
+            string lastName,
+            string birthDayStr,
+            string genderStr,
+            short height,
+            string faceJson,
+            string hairJson,
+            string clothesJson)
         {
             try
             {
@@ -25,9 +35,19 @@ namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
                 DateTime birthDay = DateTime.Parse(birthDayStr);
                 char gender = genderStr[0];
 
-                var defaultFace = new FaceDataDto();
-                var defaultHair = new HairDataDto();
-                var defaultClothes = new ClothesDataDto();
+                var face = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<FaceDataDto>(faceJson)
+                    ?? new FaceDataDto();
+
+
+                var hair = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<HairDataDto>(hairJson)
+                    ?? new HairDataDto();
+
+
+                var clothes = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<ClothesDataDto>(clothesJson)
+                    ?? new ClothesDataDto();
 
                 // 🟢 Access à ServerBootstrapper sans erreur car on est DANS le projet Server !
                 if (ServerBootstrapper.ServiceProvider == null) return;
@@ -42,9 +62,9 @@ namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
                     birthDay,
                     gender,
                     height,
-                    defaultFace,
-                    defaultHair,
-                    defaultClothes
+                    face,
+                    hair,
+                    clothes
                 );
 
                 await Delay(0); // Retour sur le thread FiveM
@@ -65,7 +85,7 @@ namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[ERROR] Échec lors de la création du personnage : {ex.Message}");
+                Debug.WriteLine(ex.ToString());
             }
         }
     }

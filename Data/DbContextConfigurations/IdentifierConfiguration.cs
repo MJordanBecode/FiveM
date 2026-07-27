@@ -13,8 +13,7 @@ public class IdentifierConfiguration : IEntityTypeConfiguration<Identifiers>
         builder.HasKey(i => i.ID);
 
         builder.Property(i => i.DiscordLicense)
-            .IsRequired()
-            .HasMaxLength(64);
+            .IsRequired();
 
         builder.Property(i => i.FiveMLicense)
             .HasMaxLength(64);

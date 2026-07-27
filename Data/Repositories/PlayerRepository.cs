@@ -15,9 +15,14 @@ namespace Data.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Players> CreatePlayerIdentifierAsync(string license, string steamHex, ulong discordId)
+
+        public async Task<Players> CreatePlayerIdentifierAsync(
+            string license,
+            string steamHex,
+            ulong discordId)
         {
             var player = await GetPlayerByLicenseAsync(license);
+
 
             if (player == null)
             {
@@ -27,56 +32,109 @@ namespace Data.Repositories
                     {
                         FiveMLicense = license,
                         SteamLicense = steamHex,
-                        DiscordLicense = discordId,
+                        DiscordLicense = discordId
                     },
 
                     ConnectionOnce = false,
-                    IsWhitelisted = discordId != 0,
+                    IsWhitelisted = discordId != 0
                 };
 
+
                 _dbContext.Players.Add(player);
+
                 await _dbContext.SaveChangesAsync();
             }
             else
             {
-                if (player.Identifier.DiscordLicense != discordId)
+                // Mise à jour Discord si nécessaire
+                if (player.Identifier != null &&
+                    player.Identifier.DiscordLicense != discordId)
                 {
                     player.Identifier.DiscordLicense = discordId;
+
+                    await _dbContext.SaveChangesAsync();
                 }
             }
+
 
             return player;
         }
 
-        public async Task<Players> GetPlayerByLicenseAsync(string license)
+
+
+        public async Task<Players?> GetPlayerByLicenseAsync(string license)
         {
             return await _dbContext.Players
-                            .Include(p => p.Identifier)
-                            .FirstOrDefaultAsync(p => p.Identifier.FiveMLicense == license);
+
+                // Compte FiveM
+                .Include(p => p.Identifier)
+
+                // Personnage(s)
+                .Include(p => p.Characters)
+                    .ThenInclude(c => c.Skin)
+
+                .FirstOrDefaultAsync(
+                    p => p.Identifier!.FiveMLicense == license
+                );
         }
 
-        // Recherche le joueur via son ID Discord (créé au préalable par le bot)
-        public async Task<Players> GetPlayerByDiscordIdAsync(ulong discordId)
+
+
+        // Recherche via Discord (bot Discord)
+        public async Task<Players?> GetPlayerByDiscordIdAsync(
+            ulong discordId)
         {
             return await _dbContext.Players
-                            // On inclut les identifiants liés pour pouvoir les modifier après
-                            .Include(p => p.Identifier)
-                            // On cherche le joueur dont l'un des identifiants possède le bon Discord ID
-                            .FirstOrDefaultAsync(p => p.Identifier.DiscordLicense == discordId);
+
+                .Include(p => p.Identifier)
+
+                .Include(p => p.Characters)
+                    .ThenInclude(c => c.Skin)
+
+                .FirstOrDefaultAsync(
+                    p => p.Identifier!.DiscordLicense == discordId
+                );
         }
+
+
 
         public async Task SaveChangesAsync()
         {
             Debug.WriteLine("===== CHANGE TRACKER =====");
 
+
             foreach (var e in _dbContext.ChangeTracker.Entries())
             {
-                Debug.WriteLine($"{e.Entity.GetType().Name} -> {e.State}");
+                Debug.WriteLine(
+                    $"{e.Entity.GetType().Name} -> {e.State}"
+                );
             }
+
 
             Debug.WriteLine("==========================");
 
+
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<PlayerCharacters> GetCharacterAsync(Guid playerId)
+        {
+            return await _dbContext.PlayerCharacters
+
+                .Include(c => c.Skin)
+
+                .FirstOrDefaultAsync(
+                    c => c.PlayerID == playerId
+                );
+        }
+
+
+        public async Task<bool> HasCharacterAsync(Guid playerId)
+        {
+            return await _dbContext.PlayerCharacters
+                .AnyAsync(
+                    c => c.PlayerID == playerId
+                );
         }
     }
 }
