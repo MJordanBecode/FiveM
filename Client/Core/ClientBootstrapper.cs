@@ -1,5 +1,5 @@
 ﻿using CitizenFX.Core;
-using Lostgen.Client.Modules.CharacterCreation;
+//using Lostgen.Client.Modules.CharacterCreation;
 using System;
 
 namespace Client.Core
@@ -19,7 +19,7 @@ namespace Client.Core
 
         private void RegisterScripts()
         {
-            new CharacterCreationClient();
+
         }
     }
 }

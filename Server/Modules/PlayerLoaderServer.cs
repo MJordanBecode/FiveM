@@ -3,6 +3,8 @@ using CitizenFX.Core.Native;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Interfaces;
 using System;
+using System.Globalization;
+using static Shared.DTOS.SkinDataDto;
 
 namespace Lostgen.Server.Core
 {
@@ -117,34 +119,40 @@ namespace Lostgen.Server.Core
 
                     if (character.Skin == null)
                     {
-                        Debug.WriteLine(
-                            "[PlayerLoaded] Le personnage existe mais aucun skin trouvé."
-                        );
-
+                        Debug.WriteLine("[PlayerLoaded] Le personnage existe mais aucun skin trouvé.");
                         return;
                     }
 
+                    var face = Newtonsoft.Json.JsonConvert
+                        .DeserializeObject<FaceDataDto>(character.Skin.Face)
+                        ?? new FaceDataDto();
 
+                    var hair = Newtonsoft.Json.JsonConvert
+                        .DeserializeObject<HairDataDto>(character.Skin.Hair)
+                        ?? new HairDataDto();
 
-                    string skinJson =
-                        Newtonsoft.Json.JsonConvert.SerializeObject(
-                            character.Skin
-                        );
+                    var clothes = Newtonsoft.Json.JsonConvert
+                        .DeserializeObject<ClothesDataDto>(character.Skin.Clothes)
+                        ?? new ClothesDataDto();
 
-                    Debug.WriteLine(
-                        $"Skin Face : {character.Skin?.Face}");
+                    // Extraction des composants (avec valeurs par défaut si absents)
+                    clothes.Components.TryGetValue(11, out var torso);
+                    clothes.Components.TryGetValue(4, out var pants);
+                    clothes.Components.TryGetValue(6, out var shoes);
 
-                    Debug.WriteLine(
-                        $"Skin Hair : {character.Skin?.Hair}");
-
-                    Debug.WriteLine(
-                        $"Skin Clothes : {character.Skin?.Clothes}");
-
-                    TriggerClientEvent(
-                        player,
-                        "lostgen:client:loadCharacter",
-                        skinJson
+                    string payload = string.Join("|",
+                        character.Gender == 'F' ? "1" : "0",
+                        face.FatherShape, face.MotherShape, face.ShapeMix.ToString(CultureInfo.InvariantCulture),
+                        face.FatherSkin, face.MotherSkin, face.SkinMix.ToString(CultureInfo.InvariantCulture),
+                        hair.Style, hair.Texture, hair.Color, hair.HighlightColor,
+                        torso?.Drawable ?? 0, torso?.Texture ?? 0,
+                        pants?.Drawable ?? 0, pants?.Texture ?? 0,
+                        shoes?.Drawable ?? 0, shoes?.Texture ?? 0
                     );
+
+                    Debug.WriteLine("[PlayerLoaded] Envoi du skin au client...");
+
+                    TriggerClientEvent(player, "lostgen:client:loadCharacter", payload);
                 }
             }
             catch (Exception ex)

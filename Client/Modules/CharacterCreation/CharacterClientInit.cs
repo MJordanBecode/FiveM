@@ -2,6 +2,7 @@
 using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Lostgen.Client.Modules.CharacterCreation
@@ -13,7 +14,12 @@ namespace Lostgen.Client.Modules.CharacterCreation
 
 
         public CharacterCreationClient()
-        {
+        {       
+            // 🟢 Désactive l'auto-spawn dès le chargement du script client
+            TriggerEvent("spawnmanager:setAutoSpawn", false);
+
+            EventHandlers["lostgen:client:startCharacterCreation"] += new Action<string>(StartCharacterCreation);
+            // ... reste inchangé
 
             EventHandlers["lostgen:client:startCharacterCreation"] += new Action<string>(StartCharacterCreation);
 
@@ -39,12 +45,15 @@ namespace Lostgen.Client.Modules.CharacterCreation
             API.RegisterNuiCallbackType("updateClothes");
             EventHandlers["__cfx_nui:updateClothes"] +=
                 new Action<IDictionary<string, object>, CallbackDelegate>(OnUpdateClothes);
+
+            EventHandlers["lostgen:client:loadCharacter"] += new Action<string>(OnLoadCharacter);
         }
 
 
 
         private void OnUpdateHeadBlend(IDictionary<string, object> data, CallbackDelegate cb)
         {
+
             int ped = Game.PlayerPed.Handle;
 
 
@@ -671,6 +680,72 @@ namespace Lostgen.Client.Modules.CharacterCreation
             {
                 status = "ok"
             });
+        }
+
+        private async void OnLoadCharacter(string payload)
+        {
+            Debug.WriteLine("[CharacterCreation] >>> Event loadCharacter reçu !");
+
+            string[] parts = payload.Split('|');
+
+            bool isFemale = parts[0] == "1";
+            int fatherShape = int.Parse(parts[1]);
+            int motherShape = int.Parse(parts[2]);
+            float shapeMix = float.Parse(parts[3], CultureInfo.InvariantCulture);
+            int fatherSkin = int.Parse(parts[4]);
+            int motherSkin = int.Parse(parts[5]);
+            float skinMix = float.Parse(parts[6], CultureInfo.InvariantCulture);
+            int hairStyle = int.Parse(parts[7]);
+            int hairTexture = int.Parse(parts[8]);
+            int hairColor = int.Parse(parts[9]);
+            int hairHighlight = int.Parse(parts[10]);
+            int torsoDrawable = int.Parse(parts[11]);
+            int torsoTexture = int.Parse(parts[12]);
+            int pantsDrawable = int.Parse(parts[13]);
+            int pantsTexture = int.Parse(parts[14]);
+            int shoesDrawable = int.Parse(parts[15]);
+            int shoesTexture = int.Parse(parts[16]);
+
+            // 1) Changer le modèle vers le bon freemode AVANT d'appliquer le skin
+            string modelName = isFemale ? "mp_f_freemode_01" : "mp_m_freemode_01";
+            Model model = new Model(modelName);
+
+            await model.Request(5000);
+
+            if (!model.IsLoaded)
+            {
+                Debug.WriteLine("[CharacterCreation] Impossible de charger le modèle freemode.");
+                return;
+            }
+
+            await Game.Player.ChangeModel(model);
+            await Delay(200);
+
+            model.MarkAsNoLongerNeeded();
+
+            int ped = Game.PlayerPed.Handle;
+            Debug.WriteLine($"[CharacterCreation] Application du skin sur ped {ped}...");
+
+            // 2) Appliquer le skin
+            API.SetPedHeadBlendData(
+                ped,
+                fatherShape, motherShape, 0,
+                fatherSkin, motherSkin, 0,
+                shapeMix / 100f, skinMix / 100f, 0.0f,
+                false
+            );
+
+            API.SetPedComponentVariation(ped, 2, hairStyle, hairTexture, 0);
+            API.SetPedHairColor(ped, hairColor, hairHighlight);
+
+            API.SetPedComponentVariation(ped, 11, torsoDrawable, torsoTexture, 0);
+            API.SetPedComponentVariation(ped, 4, pantsDrawable, pantsTexture, 0);
+            API.SetPedComponentVariation(ped, 6, shoesDrawable, shoesTexture, 0);
+
+            API.SetEntityVisible(ped, true, false);
+            API.SetEntityAlpha(ped, 255, 0);
+
+            Debug.WriteLine("[CharacterCreation] Skin appliqué au ped.");
         }
     }
 }

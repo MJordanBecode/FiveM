@@ -2,12 +2,13 @@
 using CitizenFX.Core.Native;
 using Lostgen.Server.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Services.Interfaces; // Accès aux interfaces du projet Services (ICharacterService)
+using Services.Interfaces;
 using Shared.DTOS;
 using System;
+using System.Collections.Generic;
 using static Shared.DTOS.SkinDataDto;
 
-namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
+namespace Lostgen.Server.Controllers
 {
     public class CharacterController : BaseScript
     {
@@ -35,21 +36,51 @@ namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
                 DateTime birthDay = DateTime.Parse(birthDayStr);
                 char gender = genderStr[0];
 
-                var face = Newtonsoft.Json.JsonConvert
-                    .DeserializeObject<FaceDataDto>(faceJson)
-                    ?? new FaceDataDto();
+                // 1) Désérialisation des DTOs "bruts" envoyés par le NUI
+                var clientFace = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<ClientFaceDto>(faceJson)
+                    ?? new ClientFaceDto();
 
+                var clientHair = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<ClientHairDto>(hairJson)
+                    ?? new ClientHairDto();
 
-                var hair = Newtonsoft.Json.JsonConvert
-                    .DeserializeObject<HairDataDto>(hairJson)
-                    ?? new HairDataDto();
+                var clientClothes = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<ClientClothesDto>(clothesJson)
+                    ?? new ClientClothesDto();
 
+                // 2) Mapping vers les DTOs de sauvegarde (SkinDataDto)
+                var face = new FaceDataDto
+                {
+                    FatherShape = clientFace.shapeFirstID,
+                    MotherShape = clientFace.shapeSecondID,
+                    ShapeMix = clientFace.shapeMix,
 
-                var clothes = Newtonsoft.Json.JsonConvert
-                    .DeserializeObject<ClothesDataDto>(clothesJson)
-                    ?? new ClothesDataDto();
+                    FatherSkin = clientFace.shapeFirstID,
+                    MotherSkin = clientFace.shapeSecondID,
+                    SkinMix = clientFace.skinMix,
 
-                // 🟢 Access à ServerBootstrapper sans erreur car on est DANS le projet Server !
+                    EyeColor = 0
+                };
+
+                var hair = new HairDataDto
+                {
+                    Style = clientHair.drawable,
+                    Texture = clientHair.texture,
+                    Color = clientHair.color,
+                    HighlightColor = clientHair.highlight
+                };
+
+                var clothes = new ClothesDataDto
+                {
+                    Components = new Dictionary<int, ComponentDataDto>
+                    {
+                        [11] = new ComponentDataDto { Drawable = clientClothes.torso, Texture = clientClothes.torsoTexture }, // Veste/Haut
+                        [4] = new ComponentDataDto { Drawable = clientClothes.pants, Texture = clientClothes.pantsTexture }, // Pantalon
+                        [6] = new ComponentDataDto { Drawable = clientClothes.shoes, Texture = clientClothes.shoesTexture }  // Chaussures
+                    }
+                };
+
                 if (ServerBootstrapper.ServiceProvider == null) return;
 
                 using var scope = ServerBootstrapper.ServiceProvider.CreateScope();
@@ -67,7 +98,7 @@ namespace Lostgen.Server.Controllers // 🟢 Rattaché au projet Server !
                     clothes
                 );
 
-                await Delay(0); // Retour sur le thread FiveM
+                await Delay(0);
 
                 if (success)
                 {

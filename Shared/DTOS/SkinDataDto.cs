@@ -40,6 +40,7 @@ namespace Shared.DTOS
         public class HairDataDto
         {
             public int Style { get; set; }
+            public int Texture { get; set; }
             public int Color { get; set; }
             public int HighlightColor { get; set; }
         }
