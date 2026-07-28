@@ -10,9 +10,6 @@ namespace Shared.VModels
 {
     public class PlayerCharactersVM : BaseModelVM
     {
-        public Guid PlayerID { get; set; }
-
-
         // Identité RP
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -24,7 +21,14 @@ namespace Shared.VModels
         public char? Gender { get; set; }
 
 
+        // 🟢 Position (dernière déconnexion)
+        public float? PositionX { get; set; }
+        public float? PositionY { get; set; }
+        public float? PositionZ { get; set; }
+        public float? Heading { get; set; }
+
         // Apparence
+        public Guid PlayerID { get; set; }
         public Guid? SkinID { get; set; }
 
 

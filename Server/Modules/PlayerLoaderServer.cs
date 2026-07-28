@@ -140,6 +140,12 @@ namespace Lostgen.Server.Core
                     clothes.Components.TryGetValue(4, out var pants);
                     clothes.Components.TryGetValue(6, out var shoes);
 
+                    // 🟢 Position sauvegardée, avec fallback si jamais définie (premier chargement après migration par ex.)
+                    float posX = character.PositionX ?? -1037.7f;
+                    float posY = character.PositionY ?? -2737.8f;
+                    float posZ = character.PositionZ ?? 20.1f;
+                    float heading = character.Heading ?? 0f;
+
                     string payload = string.Join("|",
                         character.Gender == 'F' ? "1" : "0",
                         face.FatherShape, face.MotherShape, face.ShapeMix.ToString(CultureInfo.InvariantCulture),
@@ -147,7 +153,11 @@ namespace Lostgen.Server.Core
                         hair.Style, hair.Texture, hair.Color, hair.HighlightColor,
                         torso?.Drawable ?? 0, torso?.Texture ?? 0,
                         pants?.Drawable ?? 0, pants?.Texture ?? 0,
-                        shoes?.Drawable ?? 0, shoes?.Texture ?? 0
+                        shoes?.Drawable ?? 0, shoes?.Texture ?? 0,
+                        posX.ToString(CultureInfo.InvariantCulture),
+                        posY.ToString(CultureInfo.InvariantCulture),
+                        posZ.ToString(CultureInfo.InvariantCulture),
+                        heading.ToString(CultureInfo.InvariantCulture)
                     );
 
                     Debug.WriteLine("[PlayerLoaded] Envoi du skin au client...");

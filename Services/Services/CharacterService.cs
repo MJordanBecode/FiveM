@@ -181,5 +181,34 @@ namespace Services.Services
             return await _dbContext.PlayerCharacters
                 .AnyAsync(c => c.PlayerID == playerId);
         }
+
+        public async Task<bool> UpdateCharacterPositionAsync(Guid characterId, float x, float y, float z, float heading)
+        {
+            var character = await _dbContext.PlayerCharacters
+                .FirstOrDefaultAsync(c => c.ID == characterId);
+
+            if (character == null)
+            {
+                Debug.WriteLine($"[CharacterService] Personnage introuvable : {characterId}");
+                return false;
+            }
+
+            character.PositionX = x;
+            character.PositionY = y;
+            character.PositionZ = z;
+            character.Heading = heading;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                Debug.WriteLine($"[CharacterService] Position sauvegardée pour {characterId} : ({x}, {y}, {z})");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[CharacterService] Erreur sauvegarde position : {ex}");
+                return false;
+            }
+        }
     }
 }

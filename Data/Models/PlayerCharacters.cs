@@ -28,6 +28,12 @@ namespace Data.Models
         public Guid? SkinID { get; set; }
 
 
+        // 🟢 Position (dernière déconnexion)
+        public float? PositionX { get; set; }
+        public float? PositionY { get; set; }
+        public float? PositionZ { get; set; }
+        public float? Heading { get; set; }
+
         // Relations
 
         public Players Player { get; set; }

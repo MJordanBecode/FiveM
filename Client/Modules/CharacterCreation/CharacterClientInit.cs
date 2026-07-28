@@ -686,6 +686,8 @@ namespace Lostgen.Client.Modules.CharacterCreation
         {
             Debug.WriteLine("[CharacterCreation] >>> Event loadCharacter reçu !");
 
+            TriggerEvent("spawnmanager:setAutoSpawn", false);
+
             string[] parts = payload.Split('|');
 
             bool isFemale = parts[0] == "1";
@@ -705,6 +707,12 @@ namespace Lostgen.Client.Modules.CharacterCreation
             int pantsTexture = int.Parse(parts[14]);
             int shoesDrawable = int.Parse(parts[15]);
             int shoesTexture = int.Parse(parts[16]);
+
+            // 🟢 Position
+            float posX = float.Parse(parts[17], CultureInfo.InvariantCulture);
+            float posY = float.Parse(parts[18], CultureInfo.InvariantCulture);
+            float posZ = float.Parse(parts[19], CultureInfo.InvariantCulture);
+            float heading = float.Parse(parts[20], CultureInfo.InvariantCulture);
 
             // 1) Changer le modèle vers le bon freemode AVANT d'appliquer le skin
             string modelName = isFemale ? "mp_f_freemode_01" : "mp_m_freemode_01";
@@ -745,7 +753,26 @@ namespace Lostgen.Client.Modules.CharacterCreation
             API.SetEntityVisible(ped, true, false);
             API.SetEntityAlpha(ped, 255, 0);
 
-            Debug.WriteLine("[CharacterCreation] Skin appliqué au ped.");
+            // 3) Téléporter à la position sauvegardée
+            API.RequestCollisionAtCoord(posX, posY, posZ);
+
+            int attempts = 0;
+            while (!API.HasCollisionLoadedAroundEntity(ped) && attempts < 500)
+            {
+                attempts++;
+                await Delay(0);
+            }
+
+            API.SetEntityCoords(ped, posX, posY, posZ, false, false, false, false);
+            API.SetEntityHeading(ped, heading);
+
+            Debug.WriteLine($"[CharacterCreation] Skin appliqué et position restaurée : ({posX}, {posY}, {posZ}).");
+
+            await Delay(1500);
+            ped = Game.PlayerPed.Handle; // re-fetch au cas où le ped ait changé
+            API.SetEntityCoords(ped, posX, posY, posZ, false, false, false, false);
+            API.SetEntityHeading(ped, heading);
+            Debug.WriteLine($"[CharacterCreation] Position réappliquée après délai de sécurité : ({posX}, {posY}, {posZ}).");
         }
     }
 }

@@ -141,6 +141,7 @@
   <ItemGroup>
     <Compile Include="Controllers\CharacterController.cs" />
     <Compile Include="Modules\PlayerConnecting.cs" />
+    <Compile Include="Modules\PlayerDropped.cs" />
     <Compile Include="Modules\PlayerLoaderServer.cs" />
     <Compile Include="Core\ServerBootstrapper.cs" />
     <Compile Include="Controllers\ConnectionController.cs" />

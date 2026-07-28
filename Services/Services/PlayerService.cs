@@ -101,7 +101,7 @@ namespace Services.Services
         {
             var character = await _playerRepository.GetCharacterAsync(playerId);
 
-            if(character == null)
+            if (character == null)
                 return null;
 
 
@@ -120,6 +120,11 @@ namespace Services.Services
 
                 SkinID = character.SkinID,
 
+                // 🟢 Position ajoutée au mapping
+                PositionX = character.PositionX,
+                PositionY = character.PositionY,
+                PositionZ = character.PositionZ,
+                Heading = character.Heading,
 
                 Skin = character.Skin == null ? null : new PlayerSkinsVM
                 {
