@@ -1,0 +1,24 @@
+﻿
+
+<button class="btn @ButtonStyle @ButtonWidth @ButtonHeight" disabled="@IsDisabled" @onclick="@OnClick">@ButtonText</button>
+
+@code {
+    //Faire en sorte qu'il accepte un param de type string pour le texte du boutton + un système de style pour le boutton (ex: primary, secondary, etc.)
+    //+ un système de width ey de height pour le boutton + un système de disabled pour le boutton + un système de click event pour le boutton
+
+    string? ButtonText { get; set; }
+    string? ButtonStyle { get; set; }
+    string? ButtonWidth { get; set; }
+    string? ButtonHeight { get; set; }
+    bool IsDisabled { get; set; }
+    EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    //System of the Width and Height of the button - check on Bootstrap for the name of dimensions (ex: btn-lg, btn-sm, etc.)
+
+    //System of the disabled state of the button
+
+    //System of the click event of the button
+
+    //System of the style of the button (ex: primary, secondary, etc.)
+
+}

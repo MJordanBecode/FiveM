@@ -19,9 +19,6 @@ namespace Lostgen.Client.Modules.CharacterCreation
             TriggerEvent("spawnmanager:setAutoSpawn", false);
 
             EventHandlers["lostgen:client:startCharacterCreation"] += new Action<string>(StartCharacterCreation);
-            // ... reste inchangé
-
-            EventHandlers["lostgen:client:startCharacterCreation"] += new Action<string>(StartCharacterCreation);
 
             EventHandlers["lostgen:client:spawnPlayerAfterCreation"] += new Action<float, float, float>(OnSpawnPlayerAfterCreation);
 
@@ -51,31 +48,61 @@ namespace Lostgen.Client.Modules.CharacterCreation
 
 
 
-        private void OnUpdateHeadBlend(IDictionary<string, object> data, CallbackDelegate cb)
+        private void OnUpdateHeadBlend(
+    IDictionary<string, object> data,
+    CallbackDelegate cb)
         {
-
             int ped = Game.PlayerPed.Handle;
 
 
-            int shapeFirstID = Convert.ToInt32(data["shapeFirstID"]);
-            int shapeSecondID = Convert.ToInt32(data["shapeSecondID"]);
+            int fatherShape = data.ContainsKey("shapeFirstID")
+                ? Convert.ToInt32(data["shapeFirstID"])
+                : 0;
 
 
-            float shapeMix = Convert.ToSingle(data["shapeMix"]) / 100f;
-            float skinMix = Convert.ToSingle(data["skinMix"]) / 100f;
+            int motherShape = data.ContainsKey("shapeSecondID")
+                ? Convert.ToInt32(data["shapeSecondID"])
+                : 0;
+
+
+            int fatherSkin = data.ContainsKey("fatherSkin")
+                ? Convert.ToInt32(data["fatherSkin"])
+                : fatherShape;
+
+
+            int motherSkin = data.ContainsKey("motherSkin")
+                ? Convert.ToInt32(data["motherSkin"])
+                : motherShape;
+
+
+
+            float shapeMix = data.ContainsKey("shapeMix")
+                ? Convert.ToSingle(data["shapeMix"]) / 100f
+                : 0.5f;
+
+
+            float skinMix = data.ContainsKey("skinMix")
+                ? Convert.ToSingle(data["skinMix"]) / 100f
+                : 0.5f;
+
 
 
             API.SetPedHeadBlendData(
                 ped,
-                shapeFirstID,
-                shapeSecondID,
+
+                fatherShape,
+                motherShape,
                 0,
-                shapeFirstID,
-                shapeSecondID,
+
+                fatherSkin,
+                motherSkin,
                 0,
+
                 shapeMix,
                 skinMix,
+
                 0.0f,
+
                 false
             );
 
@@ -125,26 +152,34 @@ namespace Lostgen.Client.Modules.CharacterCreation
 
             await Game.Player.ChangeModel(model);
 
-            await Delay(500);
+            await Delay(1000);
 
 
             int ped = Game.PlayerPed.Handle;
 
-
-            Debug.WriteLine($"PED : {ped}");
-            Debug.WriteLine($"MODEL HASH : {Game.PlayerPed.Model.Hash}");
-
+            Debug.WriteLine($"PED AFTER MODEL CHANGE : {ped}");
+            Debug.WriteLine($"MODEL HASH AFTER CHANGE : {Game.PlayerPed.Model.Hash}");
 
 
-            API.NetworkResurrectLocalPlayer(
+            // seulement si mort
+            if (API.IsEntityDead(ped))
+            {
+                API.ResurrectPed(ped);
+            }
+
+
+            API.SetEntityCoords(
+                ped,
                 spawnPos.X,
                 spawnPos.Y,
                 spawnPos.Z,
-                180.0f,
-                true,
+                false,
+                false,
+                false,
                 false
             );
 
+            Debug.WriteLine($"MODEL AFTER CHANGE : {Game.PlayerPed.Model.Hash}");
 
             ApplyDefaultCharacterCustomization(ped);
 
@@ -251,7 +286,8 @@ namespace Lostgen.Client.Modules.CharacterCreation
             // Reset vêtements
             API.SetPedDefaultComponentVariation(ped);
 
-
+            API.ClearPedBloodDamage(ped);
+            API.ClearPedTasksImmediately(ped);
 
             // Visage de base
             //API.SetPedHeadBlendData(
@@ -376,17 +412,32 @@ namespace Lostgen.Client.Modules.CharacterCreation
                     : "Doe";
 
 
-                DateTime birthDay =
-                    data.ContainsKey("birthDay")
-                    ? DateTime.Parse(data["birthDay"].ToString())
-                    : DateTime.Now.AddYears(-20);
+                DateTime birthDay = DateTime.Now.AddYears(-20);
+
+                if (data.ContainsKey("birthDay"))
+                {
+                    string value = data["birthDay"]?.ToString();
+
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        DateTime.TryParse(
+                            value,
+                            out birthDay
+                        );
+                    }
+                }
 
 
 
-                char gender =
-                    data.ContainsKey("gender")
-                    ? data["gender"].ToString()[0]
-                    : 'M';
+                char gender = 'M';
+
+                if (data.ContainsKey("gender"))
+                {
+                    string value = data["gender"]?.ToString();
+
+                    if (!string.IsNullOrEmpty(value))
+                        gender = value[0];
+                }
 
 
 
@@ -438,18 +489,51 @@ namespace Lostgen.Client.Modules.CharacterCreation
             }
         }
 
+        //private static string DictToJson(IDictionary<string, object> dict)
+        //{
+        //    var parts = new List<string>();
+        //    foreach (var kvp in dict)
+        //    {
+        //        string val = kvp.Value?.ToString() ?? "0";
+        //        parts.Add($"\"{kvp.Key}\":{val}");
+        //    }
+        //    return "{" + string.Join(",", parts) + "}";
+        //}
+
         private static string DictToJson(IDictionary<string, object> dict)
         {
             var parts = new List<string>();
+
             foreach (var kvp in dict)
             {
-                string val = kvp.Value?.ToString() ?? "0";
-                parts.Add($"\"{kvp.Key}\":{val}");
+                string value;
+
+                if (kvp.Value == null)
+                {
+                    value = "null";
+                }
+                else if (kvp.Value is IDictionary<string, object> child)
+                {
+                    value = DictToJson(child);
+                }
+                else if (kvp.Value is string str)
+                {
+                    value = $"\"{str}\"";
+                }
+                else if (kvp.Value is bool boolean)
+                {
+                    value = boolean.ToString().ToLower();
+                }
+                else
+                {
+                    value = kvp.Value.ToString();
+                }
+
+                parts.Add($"\"{kvp.Key}\":{value}");
             }
+
             return "{" + string.Join(",", parts) + "}";
         }
-
-
 
 
 
@@ -558,7 +642,7 @@ namespace Lostgen.Client.Modules.CharacterCreation
 
             await Game.Player.ChangeModel(model);
 
-            await Delay(500);
+            await Delay(1000);
 
 
 
@@ -611,25 +695,24 @@ namespace Lostgen.Client.Modules.CharacterCreation
             int ped = Game.PlayerPed.Handle;
 
 
-            int drawable = Convert.ToInt32(data["drawable"]);
+            int style = Convert.ToInt32(data["style"]);
             int texture = Convert.ToInt32(data["texture"]);
             int color = Convert.ToInt32(data["color"]);
-            int highlight = Convert.ToInt32(data["highlight"]);
+            int highlightColor = Convert.ToInt32(data["highlightColor"]);
 
 
             API.SetPedComponentVariation(
                 ped,
-                2,              // composant cheveux
-                drawable,
+                2,
+                style,
                 texture,
                 0
             );
 
-
             API.SetPedHairColor(
                 ped,
                 color,
-                highlight
+                highlightColor
             );
 
 

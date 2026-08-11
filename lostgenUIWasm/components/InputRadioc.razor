@@ -1,0 +1,68 @@
+﻿@using System.Linq.Expressions
+@typeparam TValue
+
+<div class="mt-4 flex flex-col gap-2 @Class">
+
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <label class="text-[15px] @TitleCss">
+            @Title
+        </label>
+    }
+
+    <InputRadioGroup TValue="TValue"
+                     Value="@Value"
+                     ValueChanged="@ValueChanged"
+                     ValueExpression="@ValueExpression">
+
+        <div class="@(string.IsNullOrEmpty(ContainerCss) ? "flex flex-row gap-3" : ContainerCss)">
+
+            @foreach (var option in Options)
+            {
+                <label class="group relative flex items-center gap-2 cursor-pointer select-none rounded-lg border border-[#6860D9]/40 bg-white px-4 py-2 transition-all duration-200
+                    has-[:checked]:border-transparent has-[:checked]:bg-gradient-to-r has-[:checked]:from-[#6D5EF7] has-[:checked]:to-[#4A6CF7] has-[:checked]:shadow-md">
+
+                    <InputRadio TValue="TValue"
+                                Value="@option.Key"
+                                class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0 appearance-none" />
+
+                    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-[#F5E6F7] text-[#E0559E] transition-colors duration-200 peer-checked:bg-white peer-checked:text-white">
+                        @if (IconResolver is not null)
+                        {
+                            <img src="@IconResolver(option.Key)" class="h-4 w-4 @(IconClassResolver?.Invoke(option.Key))" alt="@option.Value" />
+                        }
+                    </span>
+
+                    <span class="text-[12px] font-medium text-slate-700 transition-colors duration-200 peer-checked:text-white">
+                        @option.Value
+                    </span>
+
+                </label>
+            }
+
+        </div>
+
+    </InputRadioGroup>
+
+</div>
+
+@code {
+    [Parameter] public string? Class { get; set; } = string.Empty;
+
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? TitleCss { get; set; } = string.Empty;
+    [Parameter] public string ContainerCss { get; set; } = "";
+
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<TValue>>? ValueExpression { get; set; }
+
+    [Parameter] public Dictionary<TValue, string> Options { get; set; } = new();
+
+    [Parameter] public Func<TValue, string>? IconResolver { get; set; }
+
+    [Parameter] public Func<TValue, string>? IconClassResolver { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

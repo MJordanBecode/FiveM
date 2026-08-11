@@ -1,0 +1,43 @@
+## .NET / Visual Studio
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.vspscc
+*.vssscc
+
+## Node / npm (Tailwind CLI, etc.)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+## Tailwind CSS build output (si généré, garde le si tu le commit volontairement)
+wwwroot/css/app.min.css.map
+
+## Blazor / Publish
+publish/
+*.pubxml
+*.pubxml.user
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## VS Code
+.vscode/
+
+## Divers OS
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log
+
+## Fichiers de config sensibles
+appsettings.Development.json
+appsettings.Local.json
+*.env
+.env

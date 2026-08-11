@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Services\Services.csproj" />
+		<ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="components\NewFolder\" />
+		<Folder Include="Shared\icons\" />
+		<Folder Include="wwwroot\icons\ViewOfPersonnage\" />
+	</ItemGroup>
+
+	<Target Name="Tailwind" BeforeTargets="Compile" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+		<Exec Command="npx @tailwindcss/cli -i ./wwwroot/css/tailwindcss/input.css -o ./wwwroot/css/tailwindcss/app.css" WorkingDirectory="$(ProjectDir)" />
+	</Target>
+
+</Project>

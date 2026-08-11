@@ -1,0 +1,29 @@
+﻿<div class="mt-4">
+    <label>Signature</label>
+    <div class="flex justify-center items-center w-full h-[60px] bg-white rounded-md mt-2 @(IsSigned ? "" : "cursor-pointer")"
+         @onclick="ToggleSignature">
+        @if (!IsSigned)
+        {
+            <p class="text-gray-400">Cliquez pour signer</p>
+        }
+        else
+        {
+            <p class="Sign text-[45px]">@FullName</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string lastName { get; set; } = string.Empty;
+    [Parameter] public string firstName { get; set; } = string.Empty;
+
+    private bool IsSigned { get; set; } = false;
+
+    private string FullName => $"{lastName} {firstName}".Trim();
+
+    private void ToggleSignature()
+    {
+        if (IsSigned) return; // déjà signé → on ignore le clic
+        IsSigned = true;
+    }
+}

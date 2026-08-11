@@ -1,0 +1,111 @@
+﻿<section class="flex flex-col h-full bg-[#D9D9EE] rounded-md p-4">
+    <div class="flex items-center gap-3 mt-3">
+        <img src="/icons/Sidebar/fingerprint.svg"
+             alt="Fingerprint"
+             class="h-[30px] w-[30px] object-contain filter-purple" />
+
+        <p class="text-[#5548FF] font-semibold">
+            Identity
+        </p>
+    </div>
+
+    <EditForm Model="@this">
+        <DataAnnotationsValidator />
+
+        <InputTextc Text="w-full bg-white px-2 py-[2px]"
+                    Title="Prénom"
+                    TitleCss="text-black"
+                    InputHover="border border-[#6860D9] m-0 p-0"
+                    InputFocus="focus:border focus:border-[#6860D9]"
+                    Placeholder="Entrez votre prénom..."
+                    InlineOrVertical="true"
+                    @bind-Value="@firstName" />
+
+        <InputTextc Text="w-full bg-white px-2 py-[2px] text-[8px]"
+                    Title="Nom"
+                    TitleCss="text-black"
+                    InputHover="border border-[#6860D9] m-0 p-0"
+                    InputFocus="focus:border focus:border-[#6860D9]"
+                    Placeholder="Entrez votre nom..."
+                    InlineOrVertical="true"
+                    @bind-Value="@lastName" />
+
+        <InputDatec Text="w-full bg-white px-2 py-[2px] text-[10px]"
+                    Title="Date de naissance"
+                    TitleCss="text-black"
+                    InputHover="hover:border hover:border-[#6860D9] m-0 p-0"
+                    InputFocus="focus:border focus:border-[#6860D9]"
+                    @bind-Value="@birthDay" />
+
+        <InputRadioc Title="Sexe"
+                     @bind-Value="selectedGender"
+                     Options="genderOptions"
+                     IconResolver="@(key => key == "M" ? "/icons/Sidebar/male.svg" : "/icons/Sidebar/female.svg")"
+                     IconClassResolver="@(key => key == "M" ? "filter-males" : "filter-females")" />
+        <div class="mt-4">
+            <label class="text-[15px]  ">Origine des parents</label>
+        </div>
+
+        <InputTextc Text="w-full bg-white px-2 py-[2px]"
+                    Title="Père"
+                    TitleCss="text-black"
+                    InputHover="border border-[#6860D9] m-0 p-0"
+                    InputFocus="focus:border focus:border-[#6860D9]"
+                    Placeholder="Entrez l'origine du père..."
+                    InlineOrVertical="false"
+                    @bind-Value="@fatherOrigine" />
+
+        <InputTextc Text="w-full bg-white px-2 py-[2px]"
+                    Title="Mère"
+                    TitleCss="text-black"
+                    InputHover="border border-[#6860D9] m-0 p-0"
+                    InputFocus="focus:border focus:border-[#6860D9]"
+                    Placeholder="Entrez l'origine de la mère..."
+                    InlineOrVertical="false"
+                    @bind-Value="@motherOrigine" />
+
+        <InputRangec TValue="int"
+                     Title="Taille"
+                     TitleCss="text-black"
+                     Unit="cm"
+                     Min="30"
+                     Max="220"
+                     @bind-Value="height" />
+
+        <InputRangec TValue="int"
+                     Title="Poids"
+                     TitleCss="text-black"
+                     Unit="kg"
+                     Min="30"
+                     Max="220"
+                     @bind-Value="weight" />
+    </EditForm>
+
+    <Sign lastName ="@lastName" firstName="@firstName" />
+</section>
+
+@code {
+    public string firstName = string.Empty;
+    public string lastName = string.Empty;
+    public DateOnly? birthDay { get; set; }
+
+    public string selectedGender = "M";
+    public string selectedRole = "User";
+
+    public string fatherOrigine = string.Empty;
+    public string motherOrigine = string.Empty;
+    public int height;
+    public int weight;
+
+    public string Signature => $"{lastName} {firstName}".Trim();
+
+    public Dictionary<string, string> genderOptions = new()
+    {
+        { "M", "Homme" },
+        { "F", "Femme" }
+    };
+
+
+
+    // Ici, reconstruire l'objet CharacterVM puis appeler le service pour sauvegarder.
+}

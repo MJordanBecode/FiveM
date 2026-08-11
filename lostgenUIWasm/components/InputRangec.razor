@@ -1,0 +1,73 @@
+﻿@typeparam TValue
+
+<div class="mt-4 flex flex-col gap-1 @Class">
+
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="flex items-center justify-between">
+            <label class="text-[15px] @TitleCss">@Title</label>
+            <span class="text-sm font-medium text-[#5548FF]">@Value @Unit</span>
+        </div>
+    }
+
+    <input type="range"
+           min="@Min"
+           max="@Max"
+           step="@Step"
+           value="@Value"
+           @oninput="OnInput"
+           class="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-slate-200
+    [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:h-3.5
+    [&::-webkit-slider-thumb]:w-3.5
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-white
+    [&::-webkit-slider-thumb]:border-2
+    [&::-webkit-slider-thumb]:border-[#6860D9]
+    [&::-webkit-slider-thumb]:shadow-md"
+           style="@TrackStyle" />
+
+</div>
+
+@code {
+    [Parameter] public string? Class { get; set; } = string.Empty;
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? TitleCss { get; set; } = string.Empty;
+    [Parameter] public string Unit { get; set; } = "cm";
+
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter] public double Min { get; set; } = 0;
+    [Parameter] public double Max { get; set; } = 250;
+    [Parameter] public double Step { get; set; } = 1;
+
+    private double localPercent;
+
+    protected override void OnParametersSet()
+    {
+        localPercent = ComputePercent(Value is null ? 0 : Convert.ToDouble(Value));
+    }
+
+    private double ComputePercent(double val) =>
+        Max > Min ? (val - Min) / (Max - Min) * 100 : 0;
+
+    private string TrackStyle =>
+$"background: linear-gradient(to right, #6D5EF7 0%, #6D5EF7 {localPercent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%, #E2E8F0 {localPercent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}%, #E2E8F0 100%);";
+
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        if (e.Value is null) return;
+        var str = e.Value.ToString()!;
+
+        // Mise à jour immédiate de l'affichage (avant même le round-trip Blazor)
+        if (double.TryParse(str, System.Globalization.CultureInfo.InvariantCulture, out var parsedDouble))
+        {
+            localPercent = ComputePercent(parsedDouble);
+        }
+
+        var converted = (TValue)Convert.ChangeType(str, typeof(TValue), System.Globalization.CultureInfo.InvariantCulture);
+        Value = converted;
+        await ValueChanged.InvokeAsync(converted);
+    }
+}

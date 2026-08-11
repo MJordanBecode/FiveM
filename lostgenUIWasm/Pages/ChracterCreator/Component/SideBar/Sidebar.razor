@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Components
+@inject NavigationManager Navigation
+
+<nav class="flex flex-col justify-between bg-[#7A5EEC] h-full rounded-md">
+    <div> @*Première partie du menu*@
+        <div class="flex flex-col justify-between p-4 ">
+           @foreach (var item in MenuItems)
+{
+                <button class="group box-border flex w-full flex-col items-center rounded-md px-[2px] py-2 text-[#FFFFFF] transition-all duration-200 hover:border hover:border-\[\#FFFFFF\]  hover:shadow-md">
+
+                    <img src="@item.Key" alt="@item.Value" class="w-10 brightness-0 invert transition-transform duration-200 group-hover:scale-105" />
+
+                    <span class="mt-1 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        @item.Value
+                    </span>
+
+                </button>
+}           
+        </div> 
+    </div>
+    <div class="flex flex-col justify-between p-4 ">
+        <button class="group box-border flex w-full flex-col items-center rounded-md px-[2px] py-2 text-[#FFFFFF] transition-all duration-200 hover:border hover\:border-\[\#FFFFFF\]  hover:shadow-md">
+            <img src="/icons/Sidebar/map.svg" alt="Map" class="w-10 brightness-0 invert transition-transform duration-200 group-hover:scale-105" />
+            <span class="mt-1 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"> Map </span>
+        </button>
+    </div>
+</nav>
+
+@code {
+
+    public Dictionary<string, string> MenuItems { get; } = new Dictionary<string, string>
+    {
+        { "/icons/Sidebar/identityCard.svg", "Identity" }, //faire en sorte que par défaut, c'est qui est affiché en premier 
+        { "/icons/Sidebar/dna.svg", "Heritage" },
+        { "/icons/Sidebar/shirt.svg", "Top" },
+        { "/icons/Sidebar/pant.svg", "Bottom" },
+        { "/icons/Sidebar/gem.svg", "Accessories" },
+    };
+}

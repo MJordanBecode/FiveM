@@ -1,0 +1,179 @@
+﻿@import "./reset.css";
+@import "./variables";
+@import "tailwindcss";
+@import "./custom";
+@source "../../../**/*.razor";
+
+/* 2. Classes utilitaires pour la police Kanit */
+.kanit-thin {
+    font-family: "Kanit", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.kanit-extralight {
+    font-family: "Kanit", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.kanit-light {
+    font-family: "Kanit", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.kanit-regular {
+    font-family: "Kanit", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.kanit-medium {
+    font-family: "Kanit", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.kanit-semibold {
+    font-family: "Kanit", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.kanit-bold {
+    font-family: "Kanit", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.kanit-extrabold {
+    font-family: "Kanit", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.kanit-black {
+    font-family: "Kanit", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.kanit-thin-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.kanit-extralight-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 200;
+    font-style: italic;
+}
+
+.kanit-light-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.kanit-regular-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.kanit-medium-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.kanit-semibold-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.kanit-bold-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.kanit-extrabold-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 800;
+    font-style: italic;
+}
+
+.kanit-black-italic {
+    font-family: "Kanit", sans-serif;
+    font-weight: 900;
+    font-style: italic;
+}
+
+/*Signature font*/
+.passions-conflict-regular {
+    font-family: "Passions Conflict", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+/* 3. Application globale aux balises HTML HTML */
+p {
+    font-family: "Kanit", sans-serif;
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Kanit", sans-serif;
+    font-weight: 600;
+}
+
+/*Signature font*/
+
+.Sign {
+    font-family: "Passions Conflict", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/*Retirer l'image d'un input Date*/
+/* 1. Obligatoire : l'input doit servir de repère */
+input[type="date"] {
+    position: relative;
+}
+
+    /* 2. Masquer les petites flèches (spin buttons) */
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+    }
+
+    /* 3. Rendre l'indicateur invisible MAIS cliquable sur tout le champ */
+.custom-date-input {
+    position: relative;
+}
+
+    /* 1. Étire le bouton natif sur tout le champ et le rend transparent */
+    .custom-date-input::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* 2. Masque les flèches du spinner sur certains navigateurs */
+    .custom-date-input::-webkit-inner-spin-button {
+        display: none;
+    }
+
+/* 4. Composants Blazor */
+.InputText {
+    outline: none;
+}
+

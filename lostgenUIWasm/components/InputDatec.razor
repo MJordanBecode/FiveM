@@ -1,0 +1,38 @@
+﻿<div class="mt-4 flex flex-col gap-1">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <label class="text-[15px] w-50 shrink-0 @TitleCss">@Title</label>
+    }
+
+    <!-- Conteneur relatif propre -->
+    <div class="relative flex items-center w-full">
+        <InputDate TValue="DateOnly?"
+                   @bind-Value="CurrentValue"
+                   class="@ComputedClass"
+                   style="font-size: 12px; color: gray;" />
+
+        <!-- L'image est calée à droite avec pointer-events-none -->
+        <img src="/icons/Sidebar/calendar.svg"
+             alt="Calendrier"
+             class="absolute right-1.5 w-5 h-5 pointer-events-none filter-purple" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? TitleCss { get; set; } = string.Empty;
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public string? InputHover { get; set; } = string.Empty;
+    [Parameter] public string? InputFocus { get; set; } = string.Empty;
+
+    [Parameter] public DateOnly? Value { get; set; }
+    [Parameter] public EventCallback<DateOnly?> ValueChanged { get; set; }
+
+    private DateOnly? CurrentValue
+    {
+        get => Value;
+        set => ValueChanged.InvokeAsync(value);
+    }
+
+    private string ComputedClass => $"InputText custom-date-input w-full pr-10  border border-transparent {Text} {InputHover} {InputFocus} rounded-3xl text-sm outline-none".Trim();
+}

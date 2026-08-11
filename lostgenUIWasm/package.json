@@ -1,0 +1,22 @@
+{
+  "name": "lostgenuiwasm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tailwind:watch": "npx @tailwindcss/cli -i ./wwwroot/css/tailwindcss/input.css -o ./wwwroot/css/tailwindcss/app.css --watch",
+    "dev": "concurrently -n dotnet,tailwind -c blue,green \"dotnet watch run\" \"npm run tailwind:watch\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+, "-vs-binding":{"ProjectOpened":["tailwind:watch"]}
+}

@@ -1,0 +1,104 @@
+﻿@page "/CharacterCreatorIndex"
+
+@* Ici, on va simplement appeler les différents composants du menu de création de personnage + pouvoir réaranger le design(changer la position des différents composants) *@
+
+<main class="flex min-h-screen flex-1 flex-col bg-red-300 p-2">
+
+    @* Header *@
+    <header class="rounded-md bg-[#7A5EEC]">
+        <div class="flex items-center justify-between">
+
+            @* Logo *@
+            <div class="flex items-center gap-2">
+                <img src="/icons/LostgenLogo.png"
+                     alt="Logo"
+                     class="h-auto w-[100px]" />
+
+                <h3 class="text-xl text-white">
+                    Création de personnage
+                </h3>
+            </div>
+
+            @* Information *@
+            <div class="m-4 flex items-center gap-4 rounded-md bg-[#6444EB] p-4 text-white">
+
+                <div>
+                    <img src="/icons/Sidebar/clock.svg"
+                         alt="Clock"
+                         class="brightness-0 invert" />
+                </div>
+
+                <div class="h-12 w-px bg-white"></div>
+
+                <div>
+                    <h3 class="text-xl">
+                        Prenez votre temps
+                    </h3>
+
+                    <p class="text-sm">
+                        Vous pouvez encore modifier votre personnage en jeu !
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+    @* Zone principale *@
+    <div class="mt-2 flex flex-1 gap-2">
+
+        @* Sidebar *@
+        <aside class="w-auto">
+            <Sidebar />
+        </aside>
+
+        <div class="flex w-full flex-1 justify-between">
+
+            <div class="h-full w-[18%]">
+                @switch (selectedTab)
+                {
+                    case "Identity":
+                        <Identity />
+                        break;
+
+                    case "Heritage":
+                        <Heritage />
+                        break;
+
+                    case "Top":
+                        <Accessories />
+                        break;
+
+                    case "Bottom":
+                        <Bottom />
+                        break;
+
+                    case "Accessories":
+                        <Accessories />
+                        break;
+
+                    default:
+                        <Identity />
+                        break;
+                }
+            </div>
+
+            <div>
+                <p>test</p>
+            </div>
+
+        </div>
+    </div>
+
+
+    @* Footer *@
+    <footer class="mt-2 rounded-md bg-[#7A5EEC] p-2 text-white">
+        <p>Test</p>
+    </footer>
+
+</main>
+
+@code {
+    private string selectedTab = "Identity"; // valeur par défaut
+}

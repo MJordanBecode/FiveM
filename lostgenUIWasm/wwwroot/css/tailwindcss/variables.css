@@ -1,0 +1,19 @@
+﻿:root {
+    /*étape 1 : Définir les variables de couleur */
+    --filter-svgcolor: invert(30%) sepia(88%) saturate(5100%) hue-rotate(241deg) brightness(101%) contrast(106%);
+    --filter-success: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+    --filter-males: invert(45%) sepia(94%) saturate(1750%) hue-rotate(200deg) brightness(96%) contrast(101%);
+    --filter-females: invert(45%) sepia(86%) saturate(2100%) hue-rotate(315deg) brightness(101%) contrast(101%);
+}
+
+
+/*couleur de svg : */
+.filter-purple { filter: var(--filter-svgcolor); }
+
+.filter-males {
+    filter: var(--filter-males);
+}
+
+.filter-females {
+    filter: var(--filter-females);
+}

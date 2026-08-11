@@ -1,0 +1,42 @@
+﻿<div class="mt-4 flex @(InlineOrVertical ? "flex-col gap-1" : "flex-row gap-3")">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <label class="text-[15px] w-8  @TitleCss">@Title</label>
+    }
+
+    <!-- Utilisation du composant natif <InputText> de Blazor -->
+    <InputText @bind-Value="CurrentValue"
+               class="@ComputedClass"
+               style="font-size: 12px;"
+               placeholder="@Placeholder"
+               autocapitalize="words" />
+</div>
+
+@code {
+    //Paramètres de la div container 
+    [Parameter] public bool InlineOrVertical { get; set; } = false;
+
+    // Paramètres du Label
+    [Parameter] public string? Title { get; set; } = string.Empty;
+    [Parameter] public string? TitleCss { get; set; } = string.Empty;
+
+    // Paramètres du Style & Contenu
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public string Placeholder { get; set; } = "Enter text...";
+    [Parameter] public string? InputHover { get; set; } = string.Empty;
+    [Parameter] public string? InputFocus { get; set; } = string.Empty;
+
+    // Liaison de données (Binding)
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    // Propriété relais pour @bind-Value
+    private string? CurrentValue
+    {
+        get => Value;
+        set => ValueChanged.InvokeAsync(value);
+    }
+
+    // Regroupement de toutes les classes Tailwind
+    private string ComputedClass => $"InputText {Text} border border-transparent hover:{InputHover} {InputFocus} rounded-3xl text-[12px] capitalize outline-none placeholder:text-[12px]".Trim();
+}

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.5581896">
+  <PropertyGroup>
+    <StartupCommand>npm run dev</StartupCommand>
+    <JavaScriptTestRoot>src\</JavaScriptTestRoot>
+    <JavaScriptTestFramework>Vitest</JavaScriptTestFramework>
+    <!-- Allows the build (or compile) script located on package.json to run on Build -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <!-- Folder where production build objects will be placed -->
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\components\CharacterCreator\Identity\" />
+    <Folder Include="src\components\CharacterCreator\Heritage\" />
+    <Folder Include="src\components\CharacterCreator\Face\" />
+    <Folder Include="src\components\CharacterCreator\Appearance\" />
+    <Folder Include="src\components\CharacterCreator\clothes\" />
+    <Folder Include="src\components\CharacterCreator\Layout\" />
+    <Folder Include="src\components\CharacterCreator\Validation\" />
+    <Folder Include="src\components\common\" />
+    <Folder Include="src\components\data\" />
+    <Folder Include="src\components\icons\" />
+    <Folder Include="src\components\services\" />
+    <Folder Include="src\components\types\" />
+  </ItemGroup>
+</Project>

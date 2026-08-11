@@ -1,0 +1,15 @@
+﻿@* @page "/menu-f1" *@
+@using Shared.Enums
+
+<section>
+    @foreach (var item in Enum.GetValues<F1MenuEnum>())
+    {
+        <div class="menu-item">
+            <h3>@item</h3>
+        </div>
+    }
+</section>
+
+@code {
+    //Faire un enum avec tous les noms du menu F1 à afficher
+}

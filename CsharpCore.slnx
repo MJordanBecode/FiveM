@@ -14,6 +14,11 @@
   <Project Path="ConsoleFiveM/ConsoleFiveM.csproj" Id="8bc767ff-f72d-4f18-a648-a5f08799a5a7" />
   <Project Path="Data/Data.csproj" Id="e2962440-0cb0-46d4-a38a-0e6baba11fe7" />
   <Project Path="DiscordBot/DiscordBot.csproj" Id="3f5748c7-06b0-4216-80f0-82e822333ea3" />
+  <Project Path="Lostgen.UI/lostgen.ui.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="lostgenUIWasm/lostgenUIWasm.csproj" Id="43c5d6ff-fb40-4cf8-b29d-e4e9464676f2" />
   <Project Path="Server/Server.csproj" Id="9c255be2-ccdb-43b8-99cb-f336e7691785" />
   <Project Path="Services/Services.csproj" Id="8dbd7e97-1ddd-4ce7-a5c1-e87b29fa4183" />
   <Project Path="Shared/Shared.csproj" Id="1b8fe404-ba5b-4762-aed0-22f1d43a8a91" />
